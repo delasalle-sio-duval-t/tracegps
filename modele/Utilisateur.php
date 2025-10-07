@@ -84,4 +84,4 @@ public function __construct($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel
 
 } // fin de la classe Utilisateur
 // ATTENTION : on ne met pas de balise de fin de script pour ne pas prendre le risque
-// d'enregistrer d'espaces après la balise de fin de script !!!!!!!!!!!!
+// d'enregistrer d'espaces après la balise de fin de script !!!!!!!!!!!!!
