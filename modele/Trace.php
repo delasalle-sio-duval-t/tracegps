@@ -299,7 +299,7 @@ class Trace
 
             $dernier = $this->lesPointsDeTrace[count($this->lesPointsDeTrace) - 1];
 
-            $distance = $unPoint->getDistance($unPoint, $dernier);
+            $distance = Point::getDistance($unPoint, $dernier);
             $distanceCumulee = $dernier->getDistanceCumulee() + $distance;
             $unPoint->setDistanceCumulee($distanceCumulee);
 
