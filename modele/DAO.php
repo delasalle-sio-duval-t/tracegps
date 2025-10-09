@@ -153,7 +153,7 @@ class DAO
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
         // libère les ressources du jeu de données
         $req->closeCursor();
-
+        
         // traitement de la réponse
         if ( ! $uneLigne) {
             return null;
@@ -168,29 +168,29 @@ class DAO
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
-
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):"";
+            
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             return $unUtilisateur;
         }
     }
-
-
-// fournit la collection  de tous les utilisateurs (de niveau 1)
-// le résultat est fourni sous forme d'une collection d'objets Utilisateur
-// modifié par dP le 27/12/2017
+    
+    
+    // fournit la collection  de tous les utilisateurs (de niveau 1)
+    // le résultat est fourni sous forme d'une collection d'objets Utilisateur
+    // modifié par dP le 27/12/2017
     public function getTousLesUtilisateurs() {
         // préparation de la requête de recherche
         $txt_req = "Select id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace";
         $txt_req .= " from tracegps_vue_utilisateurs";
         $txt_req .= " where niveau = 1";
         $txt_req .= " order by pseudo";
-
+        
         $req = $this->cnx->prepare($txt_req);
         // extraction des données
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
-
+        
         // construction d'une collection d'objets Utilisateur
         $lesUtilisateurs = array();
         // tant qu'une ligne est trouvée :
@@ -204,8 +204,8 @@ class DAO
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
-
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):"";
+            
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
             $lesUtilisateurs[] = $unUtilisateur;
@@ -218,15 +218,15 @@ class DAO
         return $lesUtilisateurs;
     }
 
-
-// enregistre l'utilisateur $unUtilisateur dans la bdd
-// fournit true si l'enregistrement s'est bien effectué, false sinon
-// met à jour l'objet $unUtilisateur avec l'id (auto_increment) attribué par le SGBD
-// modifié par dP le 9/1/2018
+    
+    // enregistre l'utilisateur $unUtilisateur dans la bdd
+    // fournit true si l'enregistrement s'est bien effectué, false sinon
+    // met à jour l'objet $unUtilisateur avec l'id (auto_increment) attribué par le SGBD
+    // modifié par dP le 9/1/2018
     public function creerUnUtilisateur($unUtilisateur) {
         // on teste si l'utilisateur existe déjà
         if ($this->existePseudoUtilisateur($unUtilisateur->getPseudo())) return false;
-
+        
         // préparation de la requête
         $txt_req1 = "insert into tracegps_utilisateurs (pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation)";
         $txt_req1 .= " values (:pseudo, :mdpSha1, :adrMail, :numTel, :niveau, :dateCreation)";
@@ -242,7 +242,7 @@ class DAO
         $ok = $req1->execute();
         // sortir en cas d'échec
         if ( ! $ok) { return false; }
-
+        
         // recherche de l'identifiant (auto_increment) qui a été attribué à la trace
         $unId = $this->cnx->lastInsertId();
         $unUtilisateur->setId($unId);
@@ -291,7 +291,7 @@ class DAO
             $txt_req1 .= " where idAutorisant = :idUtilisateur or idAutorise = :idUtilisateur";
             $req1 = $this->cnx->prepare($txt_req1);
             // liaison de la requête et de ses paramètres
-            $req1->bindValue("idUtilisateur", utf8_decode($idUtilisateur), PDO::PARAM_INT);
+            $req1->bindValue("idUtilisateur", mb_convert_encoding($idUtilisateur, 'ISO-8859-1', 'UTF-8'), PDO::PARAM_INT);
             // exécution de la requête
             $ok = $req1->execute();
             
@@ -300,7 +300,7 @@ class DAO
             $txt_req2 .= " where pseudo = :pseudo";
             $req2 = $this->cnx->prepare($txt_req2);
             // liaison de la requête et de ses paramètres
-            $req2->bindValue("pseudo", utf8_decode($pseudo), PDO::PARAM_STR);
+            $req2->bindValue("pseudo", mb_convert_encoding($pseudo, 'ISO-8859-1', 'UTF-8'), PDO::PARAM_STR);
             // exécution de la requête
             $ok = $req2->execute();
             return $ok;
