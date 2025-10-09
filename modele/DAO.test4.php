@@ -2,7 +2,7 @@
 // Projet TraceGPS
 // fichier : modele/DAO.test1.php
 // Rôle : test de la classe DAO.php
-// Dernière mise à jour : xxxxxxxxxxxxxxxxx par xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+// Dernière mise à jour : 09/10/2025 par lB
 
 // Le code des tests restant à développer va être réparti entre les membres de l'équipe de développement.
 // Afin de limiter les conflits avec GitHub, il est décidé d'attribuer un fichier de test à chaque développeur.
@@ -31,11 +31,23 @@ include_once ('DAO.php');
 $dao = new DAO();
 
 
-// test de la méthode xxxxxxxxxxxxxxxxxxxxxxxxxxx ----------------------------------------------------------
-// modifié par xxxxxxxxxxxxxxxxx le xxxxxxxxxx
-echo "<h3>Test de xxxxxxxxxxxxxxxxx : </h3>";
-// A CONTINUER .........
-
+// test de la méthode creerUneTrace ----------------------------------------------------------
+// modifié par lB le 09/10/2025
+echo "<h3>Test de creerUneTrace : </h3>";
+$trace1 = new Trace(0, "2017-12-18 14:00:00", "2017-12-18 14:10:00", true, 3);
+$ok = $dao->creerUneTrace($trace1);
+if ($ok) {
+    echo "<p>Trace bien enregistrée !</p>";
+    echo $trace1->toString();
+}
+else {
+    echo "<p>Echec lors de l'enregistrement de la trace !</p>";
+}
+$trace2 = new Trace(0, date('Y-m-d H:i:s', time()), null, false, 3);
+$ok = $dao->creerUneTrace($trace2);
+if ($ok) {
+    echo "<p>Trace bien enregistrée !</p>";
+}
 
 
 

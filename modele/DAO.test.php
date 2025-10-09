@@ -88,7 +88,7 @@ foreach ($lesUtilisateurs as $unUtilisateur)
 // test de la méthode creerUnUtilisateur ----------------------------------------------------------
 // modifié par dP le 12/8/2018
 echo "<h3>Test de creerUnUtilisateur : </h3>";
-$unUtilisateur = new Utilisateur(0, "toto", "mdputilisateur", "delasalle.sio.xxxx@gmail.com", "5566778899", 1, date('Y-m-d H:i:s', time()), 0, null);
+$unUtilisateur = new Utilisateur(0, "toto", "mdputilisateur", "toto@gmail.com", "5566778899", 1, date('Y-m-d H:i:s', time()), 0, null);
 $ok = $dao->creerUnUtilisateur($unUtilisateur);
 if ($ok)
 {   echo "<p>Utilisateur bien enregistré !</p>";

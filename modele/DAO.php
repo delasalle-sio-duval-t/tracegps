@@ -168,7 +168,7 @@ class DAO
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace!= null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):"";
             
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             return $unUtilisateur;
@@ -204,7 +204,7 @@ class DAO
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace!= null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):"";
             
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
@@ -946,13 +946,165 @@ class DAO
     
    
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 4 (xxxxxxxxxxxxxxxxxxxx) : lignes 950 à 1150
+    // début de la zone attribuée au développeur 4 (Louis Bougot) : lignes 950 à 1150
     // --------------------------------------------------------------------------------------
+
+
+    public function getUneTrace($idTrace) {
+        $txt_req = "SELECT * FROM tracegps_traces WHERE id = :id";
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("id", $idTrace, PDO::PARAM_INT);
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $req->closeCursor();
+
+        if (! $uneLigne) return null;
+
+        // Récupération des points de la trace
+        $lesPoints = $this->getLesPointsDeTrace($idTrace);
+
+        // Création de l’objet Trace
+        $uneTrace = new Trace(
+            $uneLigne->id,
+            $uneLigne->dateHeureDebut,
+            $uneLigne->dateHeureFin,
+            $uneLigne->terminee,
+            $uneLigne->idUtilisateur
+        );
+
+        // Ajout des points à la trace
+        foreach ($lesPoints as $unPoint) {
+            $uneTrace->ajouterPoint($unPoint);
+        }
+
+        return $uneTrace;
+    }
+
+    public function getToutesLesTraces() {
+        $lesTraces = array();
+
+        $txt_req = "SELECT * FROM tracegps_traces ORDER BY dateDebut DESC";
+        $req = $this->cnx->prepare($txt_req);
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+
+        while ($uneLigne) {
+            $uneTrace = new Trace(
+                $uneLigne->id,
+                $uneLigne->dateHeureDebut,
+                $uneLigne->dateHeureFin,
+                $uneLigne->terminee,
+                $uneLigne->idUtilisateur
+            );
+
+            // On ajoute aussi les points correspondants
+            $lesPoints = $this->getLesPointsDeTrace($uneLigne->id);
+            foreach ($lesPoints as $unPoint) {
+                $uneTrace->ajouterPoint($unPoint);
+            }
+
+            $lesTraces[] = $uneTrace;
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+
+        $req->closeCursor();
+        return $lesTraces;
+    }
+
+    public function getLesTraces($idUtilisateur) {
+        $lesTraces = array();
+
+        $txt_req = "SELECT * FROM tracegps_traces WHERE idUtilisateur = :idUtilisateur ORDER BY dateDebut DESC";
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+
+        while ($uneLigne) {
+            $uneTrace = new Trace(
+                $uneLigne->id,
+                $uneLigne->dateHeureDebut,
+                $uneLigne->dateHeureFin,
+                $uneLigne->terminee,
+                $uneLigne->idUtilisateur
+            );
+
+            // On ajoute les points associés
+            $lesPoints = $this->getLesPointsDeTrace($uneLigne->id);
+            foreach ($lesPoints as $unPoint) {
+                $uneTrace->ajouterPoint($unPoint);
+            }
+
+            $lesTraces[] = $uneTrace;
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+
+        $req->closeCursor();
+        return $lesTraces;
+
+    }
+
+    public function getLesTracesAutorisees($idUtilisateur) {
+        $txt_req = "SELECT * FROM tracegps_autorisations WHERE idAutorisant = :idUtilisateur";
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        while ($uneLigne) {
+            $uneTrace = new Trace(
+                $uneLigne->id,
+                $uneLigne->dateHeureDebut,
+                $uneLigne->dateHeureFin,
+                $uneLigne->terminee,
+                $uneLigne->idUtilisateur
+            );
+
+            // On ajoute les points associés
+            $lesPoints = $this->getLesPointsDeTrace($uneLigne->id);
+            foreach ($lesPoints as $unPoint) {
+                $uneTrace->ajouterPoint($unPoint);
+            }
+
+            $lesTraces[] = $uneTrace;
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+        $req->closeCursor();
+        return $lesTraces;
+    }
     
-    
-    
-    
-    
+    public function creerUneTrace($uneTrace) {
+        $txt_req = "INSERT INTO tracegps_traces (id, dateDebut, dateFin, terminee, idUtilisatur) ";
+        $txt_req .= VALUES (:id, :dateDebut, :dateFin."','".$uneTrace->terminee."','".$uneTrace->idUtilisateur."')";
+        
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("id",$uneTrace->getId(), PDO::PARAM_INT);
+        $req->bindValue("dateDebut",$uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
+        $req->bindValue("dateFin",$uneTrace->getDateHeureFin(), PDO::PARAM_STR);
+        $req->bindValue("terminee",$uneTrace->getTerminee(), PDO::PARAM_STR);
+        $req->bindValue("idUtilisateur",$uneTrace->getIdUtilisateur(), PDO::PARAM_INT);
+
+
+        
+        
+        
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        if ($uneLigne) {
+            $insert = true;
+        }
+        else {
+            $insert = false;
+        }
+        if (!$uneLigne->dateHeureFin) {
+            $uneLigne->dateHeureFin(PDO::PARAM_NULL);
+        }
+        else {
+            $uneLigne->dateHeureFin(PDO::PARAM_STR);
+        }
+        $req->closeCursor();
+        return $insert;
+
+    }
     
     
     
