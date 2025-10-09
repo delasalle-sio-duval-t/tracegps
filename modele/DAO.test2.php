@@ -54,14 +54,14 @@ foreach ($lesUtilisateurs as $unUtilisateur)
     echo ('<br>');
 }
 
-//// test de la méthode autoriseAConsulter ----------------------------------------------------------
-//// modifié par dP le 13/8/2021
-//echo "<h3>Test de autoriseAConsulter : </h3>";
-//if ($dao->autoriseAConsulter(2, 3)) $autorise = "oui"; else $autorise = "non";
-//echo "<p>L'utilisateur 2 autorise l'utilisateur 3 : <b>" . $autorise . "</b><br>";
-//if ($dao->autoriseAConsulter(3, 2)) $autorise = "oui"; else $autorise = "non";
-//echo "<p>L'utilisateur 3 autorise l'utilisateur 2 : <b>" . $autorise . "</b><br>";
-//
+// test de la méthode autoriseAConsulter ----------------------------------------------------------
+// modifié par dP le 13/8/2021
+echo "<h3>Test de autoriseAConsulter : </h3>";
+if ($dao->autoriseAConsulter(2, 3)) $autorise = "oui"; else $autorise = "non";
+echo "<p>L'utilisateur 2 autorise l'utilisateur 3 : <b>" . $autorise . "</b><br>";
+if ($dao->autoriseAConsulter(3, 2)) $autorise = "oui"; else $autorise = "non";
+echo "<p>L'utilisateur 3 autorise l'utilisateur 2 : <b>" . $autorise . "</b><br>";
+
 //// test de la méthode creerUneAutorisation ---------------------------------------------------------
 //// modifié par dP le 13/8/2021
 //echo "<h3>Test de creerUneAutorisation : </h3>";
