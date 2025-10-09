@@ -134,47 +134,47 @@ else {
 
 // test de la méthode supprimerUnUtilisateur ------------------------------------------------------
 // modifié par dP le 12/8/2018
-//echo "<h3>Test de supprimerUnUtilisateur : </h3>";
-//$ok = $dao->supprimerUnUtilisateur("toto");
-//if ($ok) {
-//    echo "<p>Utilisateur toto bien supprimé !</p>";
-//}
-//else {
-//    echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
-//}
-//$ok = $dao->supprimerUnUtilisateur("toto");
-//if ($ok) {
-//    echo "<p>Utilisateur toto bien supprimé !</p>";
-//}
-//else {
-//    echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
-//}
+echo "<h3>Test de supprimerUnUtilisateur : </h3>";
+$ok = $dao->supprimerUnUtilisateur("toto");
+if ($ok) {
+    echo "<p>Utilisateur toto bien supprimé !</p>";
+}
+else {
+    echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
+}
+$ok = $dao->supprimerUnUtilisateur("toto");
+if ($ok) {
+    echo "<p>Utilisateur toto bien supprimé !</p>";
+}
+else {
+    echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
+}
 
 
 
 
 // test de la méthode envoyerMdp ------------------------------------------------------------------
 // modifié par dP le 12/8/2018
-//echo "<h3>Test de envoyerMdp : </h3>";
-//// pour ce test, une adresse mail que vous pouvez consulter
-//$unUtilisateur = new Utilisateur(0, "toto", "mdputilisateur", "delasalle.sio.xxxxx@gmail.com", "5566778899", 2, date('Y-m-d H:i:s', time()), 0, null);
-//$ok = $dao->creerUnUtilisateur($unUtilisateur);
-//$dao->modifierMdpUtilisateur("toto", "mdpadmin");
-//$ok = $dao->envoyerMdp("toto", "mdpadmin");
-//if ($ok) {
-//    echo "<p>Mail bien envoyé !</p>";
-//}
-//else {
-//    echo "<p>Echec lors de l'envoi du mail !</p>";
-//}
-//// supprimer le compte créé
-//$ok = $dao->supprimerUnUtilisateur("toto");
-//if ($ok) {
-//    echo "<p>Utilisateur toto bien supprimé !</p>";
-//}
-//else {
-//    echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
-//}
+echo "<h3>Test de envoyerMdp : </h3>";
+// pour ce test, une adresse mail que vous pouvez consulter
+$unUtilisateur = new Utilisateur(0, "toto", "mdputilisateur", "delasalle.sio.xxxxx@gmail.com", "5566778899", 2, date('Y-m-d H:i:s', time()), 0, null);
+$ok = $dao->creerUnUtilisateur($unUtilisateur);
+$dao->modifierMdpUtilisateur("toto", "mdpadmin");
+$ok = $dao->envoyerMdp("toto", "mdpadmin");
+if ($ok) {
+    echo "<p>Mail bien envoyé !</p>";
+}
+else {
+    echo "<p>Echec lors de l'envoi du mail !</p>";
+}
+// supprimer le compte créé
+$ok = $dao->supprimerUnUtilisateur("toto");
+if ($ok) {
+    echo "<p>Utilisateur toto bien supprimé !</p>";
+}
+else {
+    echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
+}
 
 
 

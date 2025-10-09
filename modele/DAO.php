@@ -657,202 +657,32 @@ class DAO
 
         $req->closeCursor();
 
-        // autorise si une ligne existe
+        // autorise si seulement une ligne existe, sinon refuse
         return ($nbReponses > 0);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    public function creerUneAutorisation($idAutorisant, $idAutorise)
+    {
+        // préparation de la requête SQL
+        $txt_req = "SELECT COUNT(*)";
+        $txt_req .= " FROM tracegps_autorisations";
+        $txt_req .= " WHERE idAutorisant = :idAutorisant";
+        $txt_req .= " AND idAutorise = :idAutorise";
+
+        $req = $this->cnx->prepare($txt_req);
+
+        // liaison des paramètres
+        $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+        $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+
+        // exécution
+        $req->execute();
+        $nbReponses = $req->fetchColumn(0);
+
+        $req->closeCursor();
+    }
+    
+
     
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 3 (xxxxxxxxxxxxxxxxxxxx) : lignes 750 à 949
