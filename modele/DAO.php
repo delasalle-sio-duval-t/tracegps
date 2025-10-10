@@ -1073,31 +1073,21 @@ class DAO
     }
     
     public function creerUneTrace($uneTrace) {
-        $txt_req = "INSERT INTO tracegps_traces (id, dateDebut, dateFin, terminee, idUtilisateur) VALUES (:id, :dateDebut, :dateFin, :terminee, :idUtilisateur)";
+        $txt_req = "Insert into tracegps_traces (id, dateDebut, dateFin, terminee, idUtilisateur) ";
+        $txt_req .= "VALUES (:id, :dateDebut, :dateFin, :terminee, :idUtilisateur)";
         
         $req = $this->cnx->prepare($txt_req);
-        $req->bindValue("id",$uneTrace->getId(), PDO::PARAM_INT);
-        $req->bindValue("dateDebut",$uneTrace->getDateHeureDebut(), PDO::PARAM_STR);
-        $req->bindValue("dateFin",$uneTrace->getDateHeureFin(), PDO::PARAM_STR);
-        $req->bindValue("terminee",$uneTrace->getTerminee(), PDO::PARAM_STR);
-        $req->bindValue("idUtilisateur",$uneTrace->getIdUtilisateur(), PDO::PARAM_INT);
-
+        $req->bindValue("id", mb_convert_encoding($uneTrace->getId(),'ISO-8859-1', 'UTF-8'), PDO::PARAM_INT);
+        $req->bindValue("dateDebut", mb_convert_encoding($uneTrace->getDateHeureDebut(),'ISO-8859-1', 'UTF-8'), PDO::PARAM_STR);
+        $req->bindValue("dateFin",$uneTrace->getDateHeureFin()!= null ? mb_convert_encoding($uneTrace->getDateHeureFin(), 'UTF-8', 'ISO-8859-1'): PDO::PARAM_STR);
+        $req->bindValue("terminee",mb_convert_encoding($uneTrace->getTerminee(), 'ISO-8859-1', 'UTF-8'), PDO::PARAM_STR);
+        $req->bindValue("idUtilisateur", mb_convert_encoding($uneTrace->getIdUtilisateur(), 'ISO-8859-1', 'UTF-8'),PDO::PARAM_INT);
         $req->execute();
-        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
-        if ($uneLigne) {
-            $insert = true;
-        }
-        else {
-            $insert = false;
-        }
-        if (!$uneLigne->dateHeureFin) {
-            $uneLigne->dateHeureFin(PDO::PARAM_NULL);
-        }
-        else {
-            $uneLigne->dateHeureFin(PDO::PARAM_STR);
-        }
-        $req->closeCursor();
-        return $insert;
+        $ok = $req->execute();
+        if ( ! $ok) { return false; }
+        $unId = $this->cnx->lastInsertId();
+        $uneTrace->setId($unId);
+        return true;
 
     }
     
