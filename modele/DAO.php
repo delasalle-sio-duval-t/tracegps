@@ -348,7 +348,40 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 1 (xxxxxxxxxxxxxxxxxxxx) : lignes 350 à 549
     // --------------------------------------------------------------------------------------
-    
+    public function  getLesPointsDeTrace($idTrace)
+    {
+        // préparation de la requête de recherche
+        $txt_req = "Select * from tracegps_points where idTrace = :idTrace";
+        $req = $this->cnx->prepare($txt_req);
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_STR);
+        // exécution de la requête
+        $req->execute();
+        $reponses = $req->fetchAll(PDO::FETCH_OBJ);
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+
+        $listePoint = array();
+        foreach ($reponses as $uneLigne)
+        {
+            $unPoint = new PointDeTrace(
+                $uneLigne->idTrace,
+                $uneLigne->id,
+                $uneLigne->latitude,
+                $uneLigne->longitude,
+                $uneLigne->altitude,
+                $uneLigne->dateHeure,
+                $uneLigne->rythmeCardio,
+                0,
+                0,
+                0,
+                0
+            );
+
+            $listePoint[] = $unPoint;
+        }
+        return $listePoint;
+    }
 
     
     
@@ -424,40 +457,7 @@ class DAO
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
     
     
@@ -748,38 +748,89 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 3 (xxxxxxxxxxxxxxxxxxxx) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
-    public function supprimerUneTrace($idTrace) {
-        $uneTrace = $this->getUnTrace($idTrace);
-        if ($uneTrace == null) {
+//    public function supprimerUneTrace($idTrace) {
+//        $uneTrace = $this->getUneTrace($idTrace);
+//        if ($uneTrace == null) {
+//            return false;
+//        }
+//        else {
+//            $idTrace = $uneTrace->getId();
+//            if ($idTrace != null) {
+//                foreach ($idTrace as $uneTrace) {
+//                    $this->supprimerUneTrace($uneTrace->getId());
+//                }
+//            }
+//            // préparation de la requête de suppression des autorisations
+//            $txt_req1 = "delete from tracegps_traces";
+//            $txt_req1 .= " where id = :idTrace or idTrace = :id";
+//            $req1 = $this->cnx->prepare($txt_req1);
+//            // liaison de la requête et de ses paramètres
+//            $req1->bindValue("id", utf8_decode($idTrace), PDO::PARAM_INT);
+//            // exécution de la requête
+//            $ok = $req1->execute();
+//
+//            // préparation de la requête de suppression de l'utilisateur
+//            $txt_req2 = "delete from tracegps_points";
+//            $txt_req2 .= " where idTrace = :idTrace";
+//            $req2 = $this->cnx->prepare($txt_req2);
+//            // liaison de la requête et de ses paramètres
+//            $req2->bindValue("pseudo", utf8_decode($idTrace), PDO::PARAM_STR);
+//            // exécution de la requête
+//            $ok = $req2->execute();
+//            return $ok;
+//        }
+//    }
+
+    public function supprimerUneTrace($idTrace){
+        // prération de la requête SQL
+        $txt_req = "SELECT COUNT(*)";
+        $txt_req .= " FROM tracegps_points";
+        $txt_req .= " WHERE idTrace = :idTrace";
+
+        $req = $this->cnx->prepare($txt_req);
+
+        // liaison des paramètres
+        $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+        // exécution
+        $req->execute();
+        $nbReponses = $req->fetchColumn(0);
+        // fermeture de la requete
+        $req->closeCursor();
+
+        // si une autorisation existe, on la supprime
+        if ($nbReponses > 0) {
+            $txt_req = "DELETE FROM tracegps_points";
+            $txt_req .= " WHERE idTrace = :idTrace";
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+            $ok = $req->execute();
+            $req->closeCursor();
+
+            $txt_req = "DELETE FROM tracegps_traces";
+            $txt_req .= " WHERE id = :idTrace";
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+            $ok = $req->execute();
+            $req->closeCursor();
+
+            return $ok; // si tout est bon on retourne ok
+        } else {
+            // suppression impossible, la ligne n'existe pas
             return false;
         }
-        else {
-            $idTrace = $uneTrace->getId();
-            if ($idTrace != null) {
-                foreach ($idTrace as $uneTrace) {
-                    $this->supprimerUneTrace($uneTrace->getId());
-                }
-            }
-            // préparation de la requête de suppression des autorisations
-            $txt_req1 = "delete from tracegps_traces";
-            $txt_req1 .= " where id = :idTrace or idTrace = :id";
-            $req1 = $this->cnx->prepare($txt_req1);
-            // liaison de la requête et de ses paramètres
-            $req1->bindValue("id", utf8_decode($idTrace), PDO::PARAM_INT);
-            // exécution de la requête
-            $ok = $req1->execute();
+    }
 
-            // préparation de la requête de suppression de l'utilisateur
-            $txt_req2 = "delete from tracegps_points";
-            $txt_req2 .= " where idTrace = :idTrace";
-            $req2 = $this->cnx->prepare($txt_req2);
-            // liaison de la requête et de ses paramètres
-            $req2->bindValue("pseudo", utf8_decode($idTrace), PDO::PARAM_STR);
-            // exécution de la requête
-            $ok = $req2->execute();
-            return $ok;
-        }
-        }
+   public function terminerUneTrace($idTrace) {
+       $uneTrace = $this->getUneTrace($idTrace);
+       if ($uneTrace == null) {
+           return false;
+       }
+       else {
+
+       }
+    }
+
+
     
     
     
@@ -979,7 +1030,35 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 4 (xxxxxxxxxxxxxxxxxxxx) : lignes 950 à 1150
     // --------------------------------------------------------------------------------------
-    
+    public function getUneTrace($idTrace) {
+        $txt_req = "SELECT * FROM tracegps_traces WHERE id = :id";
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("id", $idTrace, PDO::PARAM_INT);
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $req->closeCursor();
+
+        if (! $uneLigne) return null;
+
+        // Récupération des points de la trace
+        $lesPoints = $this->getLesPointsDeTrace($idTrace);
+
+        // Création de l’objet Trace
+        $uneTrace = new Trace(
+            $uneLigne->id,
+            $uneLigne->dateHeureDebut,
+            $uneLigne->dateHeureFin,
+            $uneLigne->terminee,
+            $uneLigne->idUtilisateur
+        );
+
+        // Ajout des points à la trace
+        foreach ($lesPoints as $unPoint) {
+            $uneTrace->ajouterPoint($unPoint);
+        }
+
+        return $uneTrace;
+    }
     
     
     
