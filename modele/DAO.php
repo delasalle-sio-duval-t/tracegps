@@ -2,7 +2,7 @@
 // Projet TraceGPS
 // fichier : modele/DAO.php   (DAO : Data Access Object)
 // Rôle : fournit des méthodes d'accès à la bdd tracegps (projet TraceGPS) au moyen de l'objet PDO
-// modifié par dP le 12/8/2021
+// modifié par tD le 10/10/2025
 
 // liste des méthodes déjà développées (dans l'ordre d'apparition dans le fichier) :
 
@@ -697,7 +697,41 @@ class DAO
         }
     }
 
+    public function supprimerUneAutorisation($idAutorisant, $idAutorise){
+        // prération de la requête SQL
+        $txt_req = "SELECT COUNT(*)";
+        $txt_req .= " FROM tracegps_autorisations";
+        $txt_req .= " WHERE idAutorisant = :idAutorisant";
+        $txt_req .= " AND idAutorise = :idAutorise";
 
+        $req = $this->cnx->prepare($txt_req);
+
+        // liaison des paramètres
+        $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+        $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+        // exécution
+        $req->execute();
+        $nbReponses = $req->fetchColumn(0);
+        // fermeture de la requete
+        $req->closeCursor();
+
+        // si une autorisation existe, on la supprime
+        if ($nbReponses > 0) {
+            $txt_req = "DELETE FROM tracegps_autorisations";
+            $txt_req .= " WHERE idAutorisant = :idAutorisant";
+            $txt_req .= " AND idAutorise = :idAutorise";
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+            $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+            $ok = $req->execute();
+            $req->closeCursor();
+
+            return $ok; // si tout est bon on retourne ok
+        } else {
+            // suppression impossible, la ligne n'existe pas
+            return false;
+        }
+    }
 
 
     // --------------------------------------------------------------------------------------
