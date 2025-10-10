@@ -748,7 +748,38 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 3 (xxxxxxxxxxxxxxxxxxxx) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
-    
+    public function supprimerUneTrace($idTrace) {
+        $uneTrace = $this->getUnTrace($idTrace);
+        if ($uneTrace == null) {
+            return false;
+        }
+        else {
+            $idTrace = $uneTrace->getId();
+            if ($idTrace != null) {
+                foreach ($idTrace as $uneTrace) {
+                    $this->supprimerUneTrace($uneTrace->getId());
+                }
+            }
+            // préparation de la requête de suppression des autorisations
+            $txt_req1 = "delete from tracegps_traces";
+            $txt_req1 .= " where id = :idTrace or idTrace = :id";
+            $req1 = $this->cnx->prepare($txt_req1);
+            // liaison de la requête et de ses paramètres
+            $req1->bindValue("id", utf8_decode($idTrace), PDO::PARAM_INT);
+            // exécution de la requête
+            $ok = $req1->execute();
+
+            // préparation de la requête de suppression de l'utilisateur
+            $txt_req2 = "delete from tracegps_points";
+            $txt_req2 .= " where idTrace = :idTrace";
+            $req2 = $this->cnx->prepare($txt_req2);
+            // liaison de la requête et de ses paramètres
+            $req2->bindValue("pseudo", utf8_decode($idTrace), PDO::PARAM_STR);
+            // exécution de la requête
+            $ok = $req2->execute();
+            return $ok;
+        }
+        }
     
     
     
