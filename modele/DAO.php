@@ -1073,7 +1073,7 @@ class DAO
     }
     
     public function creerUneTrace($uneTrace) {
-        $txt_req = "INSERT INTO tracegps_traces (id, dateDebut, dateFin, terminee, idUtilisatur) VALUES (:id, :dateDebut, :dateFin, :terminee, :idUtilisateur)";
+        $txt_req = "INSERT INTO tracegps_traces (id, dateDebut, dateFin, terminee, idUtilisateur) VALUES (:id, :dateDebut, :dateFin, :terminee, :idUtilisateur)";
         
         $req = $this->cnx->prepare($txt_req);
         $req->bindValue("id",$uneTrace->getId(), PDO::PARAM_INT);
