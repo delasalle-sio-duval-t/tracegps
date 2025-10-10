@@ -663,7 +663,7 @@ class DAO
 
     public function creerUneAutorisation($idAutorisant, $idAutorise)
     {
-        // préparation de la requête SQL
+        // prération de la requête SQL
         $txt_req = "SELECT COUNT(*)";
         $txt_req .= " FROM tracegps_autorisations";
         $txt_req .= " WHERE idAutorisant = :idAutorisant";
@@ -674,16 +674,32 @@ class DAO
         // liaison des paramètres
         $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
         $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
-
         // exécution
         $req->execute();
         $nbReponses = $req->fetchColumn(0);
-
+        // fermeture de la requete
         $req->closeCursor();
-    }
-    
 
-    
+        // si aucune autorisation n'existe, on l'insère
+        if ($nbReponses == 0) {
+            $txt_req = "INSERT INTO tracegps_autorisations (idAutorisant, idAutorise)";
+            $txt_req .= " VALUES (:idAutorisant, :idAutorise)";
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+            $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+            $ok = $req->execute();
+            $req->closeCursor();
+
+            return $ok; // si tout est bon on retourne ok, les valeures
+        } else {
+            // l’autorisation existe déja
+            return false;
+        }
+    }
+
+
+
+
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 3 (xxxxxxxxxxxxxxxxxxxx) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
