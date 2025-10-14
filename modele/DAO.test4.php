@@ -2,7 +2,7 @@
 // Projet TraceGPS
 // fichier : modele/DAO.test1.php
 // Rôle : test de la classe DAO.php
-// Dernière mise à jour : xxxxxxxxxxxxxxxxx par xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+// Dernière mise à jour : 09/10/2025 par lB
 
 // Le code des tests restant à développer va être réparti entre les membres de l'équipe de développement.
 // Afin de limiter les conflits avec GitHub, il est décidé d'attribuer un fichier de test à chaque développeur.
@@ -30,15 +30,25 @@
 include_once ('DAO.php');
 $dao = new DAO();
 
-
-// test de la méthode xxxxxxxxxxxxxxxxxxxxxxxxxxx ----------------------------------------------------------
-// modifié par xxxxxxxxxxxxxxxxx le xxxxxxxxxx
-echo "<h3>Test de xxxxxxxxxxxxxxxxx : </h3>";
-// A CONTINUER .........
-
-
-
-
+// test de la méthode getLesTracesAutorisees($idUtilisateur) --------------------------------------
+// modifié par dP le 14/8/2021
+echo "<h3>Test de getLesTracesAutorisees(idUtilisateur) : </h3>";
+$lesTraces = $dao->getLesTracesAutorisees(2);
+$nbReponses = sizeof($lesTraces);
+echo "<p>Nombre de traces autorisées à l'utilisateur 2 : " . $nbReponses . "</p>";
+// affichage des traces
+foreach ($lesTraces as $uneTrace)
+{ echo ($uneTrace->toString());
+    echo ('<br>');
+}
+$lesTraces = $dao->getLesTracesAutorisees(3);
+$nbReponses = sizeof($lesTraces);
+echo "<p>Nombre de traces autorisées à l'utilisateur 3 : " . $nbReponses . "</p>";
+// affichage des traces
+foreach ($lesTraces as $uneTrace)
+{ echo ($uneTrace->toString());
+    echo ('<br>');
+}
 
 
 

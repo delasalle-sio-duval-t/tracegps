@@ -35,8 +35,6 @@ $niveau = $dao->getNiveauConnexion("toto", sha1("mdputilisateur"));
 echo "<p>Niveau de ('toto', 'mdputilisateur') : " . $niveau . "</br>";
 
 
-
-
 // test de la méthode existePseudoUtilisateur -----------------------------------------------------
 // modifié par dP le 12/8/2018
 echo "<h3>Test de existePseudoUtilisateur : </h3>";
@@ -46,8 +44,6 @@ if ($dao->existePseudoUtilisateur("europa")) $existe = "oui"; else $existe = "no
 echo "Existence de l'utilisateur 'europa' : <b>" . $existe . "</b></br>";
 if ($dao->existePseudoUtilisateur("toto")) $existe = "oui"; else $existe = "non";
 echo "Existence de l'utilisateur 'toto' : <b>" . $existe . "</b></p>";
-
-
 
 
 // test de la méthode getUnUtilisateur -----------------------------------------------------------
@@ -74,7 +70,6 @@ if ($unUtilisateur) {
 else {
     echo "<p>L'utilisateur admon n'existe pas !</p>";
 }
-
 
 
 // test de la méthode getTousLesUtilisateurs ------------------------------------------------------
