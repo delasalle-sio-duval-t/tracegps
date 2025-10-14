@@ -168,8 +168,8 @@ class DAO
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace =$uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):'';
-            
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):"";
+
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             return $unUtilisateur;
         }
@@ -204,8 +204,8 @@ class DAO
             $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
             $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
             $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace =$uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):'';
-            
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):"";
+
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
             $lesUtilisateurs[] = $unUtilisateur;
@@ -291,7 +291,7 @@ class DAO
             $txt_req1 .= " where idAutorisant = :idUtilisateur or idAutorise = :idUtilisateur";
             $req1 = $this->cnx->prepare($txt_req1);
             // liaison de la requête et de ses paramètres
-            $req1->bindValue("idUtilisateur", mb_convert_encoding($idUtilisateur,  'ISO-8859-1', 'UTF-8'), PDO::PARAM_INT);
+            $req1->bindValue("idUtilisateur", mb_convert_encoding($idUtilisateur, 'ISO-8859-1', 'UTF-8'), PDO::PARAM_INT);
             // exécution de la requête
             $ok = $req1->execute();
             
@@ -395,14 +395,14 @@ class DAO
                 $uneLigne->dateHeure,
                 $uneLigne->rythmeCardio,
                 0,
-                 0,
+                0,
                 0,
                 0
             );
 
             $listePoint[] = $unPoint;
         }
-            return $listePoint;
+        return $listePoint;
     }
 
     public function  creerUnPointDeTrace($unPoint)
@@ -427,312 +427,194 @@ class DAO
 
         return $ok;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     // --------------------------------------------------------------------------------------
-    // début de la zone attribuée au développeur 2 (xxxxxxxxxxxxxxxxxxxx) : lignes 550 à 749
+    // début de la zone attribuée au développeur 2 (DUVAL Tom) : lignes 550 à 749
     // --------------------------------------------------------------------------------------
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    public function getLesUtilisateursAutorisant ($idUtilisateur) {
+        // préparation de la requête de recherche
+        $txt_req = "SELECT id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace";
+        $txt_req .= " from tracegps_vue_utilisateurs";
+        $txt_req .= " inner join tracegps_autorisations";
+        $txt_req .= " on tracegps_autorisations.idAutorisant = tracegps_vue_utilisateurs.id";
+        $txt_req .= " where tracegps_vue_utilisateurs.niveau = 1";
+        $txt_req .= " and tracegps_autorisations.idAutorise = :idUtilisateur";
+        $txt_req .= " order by pseudo;";
+
+        $req = $this->cnx->prepare($txt_req);
+        // liaison du paramètre idUtilisateur
+        $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
+        // extraction des données
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+
+        // construction d'une collection d'objets Utilisateur
+        $Utilisateur = array();
+        // tant qu'une ligne est trouvée :
+        while ($uneLigne) {
+            // création d'un objet Utilisateur
+            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
+            $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
+            $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
+            $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
+            $unNumTel = mb_convert_encoding($uneLigne->numTel, 'UTF-8', 'ISO-8859-1');
+            $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
+            $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
+            $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):"";
+
+            $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
+            // ajout de l'utilisateur à la collection
+            $Utilisateur[] = $unUtilisateur;
+            // extrait la ligne suivante
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        // fourniture de la collection
+        return $Utilisateur;
+    }
+
+    public function getLesUtilisateursAutorises($idUtilisateur){
+        // préparation de la requête de recherche
+        $txt_req = "SELECT id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace";
+        $txt_req .= " from tracegps_vue_utilisateurs";
+        $txt_req .= " inner join tracegps_autorisations";
+        $txt_req .= " on tracegps_autorisations.idAutorise = tracegps_vue_utilisateurs.id";
+        $txt_req .= " where tracegps_vue_utilisateurs.niveau = 1";
+        $txt_req .= " and tracegps_autorisations.idAutorisant = :idUtilisateur";
+        $txt_req .= " order by pseudo;";
+
+        $req = $this->cnx->prepare($txt_req);
+        // liaison du paramètre idUtilisateur
+        $req->bindValue(":idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
+        // extraction des données
+        $req->execute();
+        $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+
+        // construction d'une collection d'objets Utilisateur
+        $Utilisateur = array();
+        // tant qu'une ligne est trouvée :
+        while ($uneLigne) {
+            // création d'un objet Utilisateur
+            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
+            $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
+            $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
+            $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
+            $unNumTel = mb_convert_encoding($uneLigne->numTel, 'UTF-8', 'ISO-8859-1');
+            $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
+            $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
+            $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
+            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):"";
+
+            $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
+            // ajout de l'utilisateur à la collection
+            $Utilisateur[] = $unUtilisateur;
+            // extrait la ligne suivante
+            $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        }
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+        // fourniture de la collection
+        return $Utilisateur;
+    }
+
+    public function autoriseAConsulter($idAutorisant, $idAutorise)
+    {
+        // préparation de la requête SQL
+        $txt_req = "SELECT COUNT(*)";
+        $txt_req .= " FROM tracegps_autorisations";
+        $txt_req .= " WHERE idAutorisant = :idAutorisant";
+        $txt_req .= " AND idAutorise = :idAutorise";
+
+        $req = $this->cnx->prepare($txt_req);
+
+        // liaison des paramètres
+        $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+        $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+
+        // exécution
+        $req->execute();
+        $nbReponses = $req->fetchColumn(0);
+
+        $req->closeCursor();
+
+        // autorise si seulement une ligne existe, sinon refuse
+        return ($nbReponses > 0);
+    }
+
+    public function creerUneAutorisation($idAutorisant, $idAutorise)
+    {
+        // prération de la requête SQL
+        $txt_req = "SELECT COUNT(*)";
+        $txt_req .= " FROM tracegps_autorisations";
+        $txt_req .= " WHERE idAutorisant = :idAutorisant";
+        $txt_req .= " AND idAutorise = :idAutorise";
+
+        $req = $this->cnx->prepare($txt_req);
+
+        // liaison des paramètres
+        $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+        $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+        // exécution
+        $req->execute();
+        $nbReponses = $req->fetchColumn(0);
+        // fermeture de la requete
+        $req->closeCursor();
+
+        // si aucune autorisation n'existe, on l'insère
+        if ($nbReponses == 0) {
+            $txt_req = "INSERT INTO tracegps_autorisations (idAutorisant, idAutorise)";
+            $txt_req .= " VALUES (:idAutorisant, :idAutorise)";
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+            $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+            $ok = $req->execute();
+            $req->closeCursor();
+
+            return $ok; // si tout est bon on retourne ok, les valeures
+        } else {
+            // l’autorisation existe déja
+            return false;
+        }
+    }
+
+    public function supprimerUneAutorisation($idAutorisant, $idAutorise){
+        // prération de la requête SQL
+        $txt_req = "SELECT COUNT(*)";
+        $txt_req .= " FROM tracegps_autorisations";
+        $txt_req .= " WHERE idAutorisant = :idAutorisant";
+        $txt_req .= " AND idAutorise = :idAutorise";
+
+        $req = $this->cnx->prepare($txt_req);
+
+        // liaison des paramètres
+        $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+        $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+        // exécution
+        $req->execute();
+        $nbReponses = $req->fetchColumn(0);
+        // fermeture de la requete
+        $req->closeCursor();
+
+        // si une autorisation existe, on la supprime
+        if ($nbReponses > 0) {
+            $txt_req = "DELETE FROM tracegps_autorisations";
+            $txt_req .= " WHERE idAutorisant = :idAutorisant";
+            $txt_req .= " AND idAutorise = :idAutorise";
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+            $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+            $ok = $req->execute();
+            $req->closeCursor();
+
+            return $ok; // si tout est bon on retourne ok
+        } else {
+            // suppression impossible, la ligne n'existe pas
+            return false;
+        }
+    }
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 3 (xxxxxxxxxxxxxxxxxxxx) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
