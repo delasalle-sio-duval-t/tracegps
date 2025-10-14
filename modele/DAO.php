@@ -348,9 +348,42 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 1 (xxxxxxxxxxxxxxxxxxxx) : lignes 350 à 549
     // --------------------------------------------------------------------------------------
-    
 
-    
+
+    public function  getLesPointsDeTrace($idTrace)
+    {
+        // préparation de la requête de recherche
+        $txt_req = "Select * from tracegps_points where idTrace = :idTrace";
+        $req = $this->cnx->prepare($txt_req);
+        // liaison de la requête et de ses paramètres
+        $req->bindValue("idTrace", $idTrace, PDO::PARAM_STR);
+        // exécution de la requête
+        $req->execute();
+        $reponses = $req->fetchAll(PDO::FETCH_OBJ);
+        // libère les ressources du jeu de données
+        $req->closeCursor();
+
+        $listePoint = array();
+        foreach ($reponses as $uneLigne)
+        {
+            $unPoint = new PointDeTrace(
+                $uneLigne->idTrace,
+                $uneLigne->id,
+                $uneLigne->latitude,
+                $uneLigne->longitude,
+                $uneLigne->altitude,
+                $uneLigne->dateHeure,
+                $uneLigne->rythmeCardio,
+                0,
+                0,
+                0,
+                0
+            );
+
+            $listePoint[] = $unPoint;
+        }
+        return $listePoint;
+    }
     
     
     
@@ -966,8 +999,8 @@ class DAO
         // Création de l’objet Trace
         $uneTrace = new Trace(
             $uneLigne->id,
-            $uneLigne->dateHeureDebut,
-            $uneLigne->dateHeureFin,
+            $uneLigne->dateDebut,
+            $uneLigne->dateFin,
             $uneLigne->terminee,
             $uneLigne->idUtilisateur
         );
@@ -991,8 +1024,8 @@ class DAO
         while ($uneLigne) {
             $uneTrace = new Trace(
                 $uneLigne->id,
-                $uneLigne->dateHeureDebut,
-                $uneLigne->dateHeureFin,
+                $uneLigne->dateDebut,
+                $uneLigne->dateFin,
                 $uneLigne->terminee,
                 $uneLigne->idUtilisateur
             );
@@ -1023,8 +1056,8 @@ class DAO
         while ($uneLigne) {
             $uneTrace = new Trace(
                 $uneLigne->id,
-                $uneLigne->dateHeureDebut,
-                $uneLigne->dateHeureFin,
+                $uneLigne->dateDebut,
+                $uneLigne->dateFin,
                 $uneLigne->terminee,
                 $uneLigne->idUtilisateur
             );
@@ -1045,16 +1078,17 @@ class DAO
     }
 
     public function getLesTracesAutorisees($idUtilisateur) {
-        $txt_req = "SELECT * FROM tracegps_autorisations WHERE idAutorisant = :idUtilisateur";
+        $txt_req = "SELECT * FROM tracegps_traces INNER JOIN tracegps_autorisations ON id = idAutorise WHERE idAutorise = :idUtilisateur";
         $req = $this->cnx->prepare($txt_req);
         $req->bindValue("idUtilisateur", $idUtilisateur, PDO::PARAM_INT);
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+        $lesTraces = array();
         while ($uneLigne) {
             $uneTrace = new Trace(
                 $uneLigne->id,
-                $uneLigne->dateHeureDebut,
-                $uneLigne->dateHeureFin,
+                $uneLigne->dateDebut,
+                $uneLigne->dateFin,
                 $uneLigne->terminee,
                 $uneLigne->idUtilisateur
             );
@@ -1079,7 +1113,7 @@ class DAO
         $req = $this->cnx->prepare($txt_req);
         $req->bindValue("id", mb_convert_encoding($uneTrace->getId(),'ISO-8859-1', 'UTF-8'), PDO::PARAM_INT);
         $req->bindValue("dateDebut", mb_convert_encoding($uneTrace->getDateHeureDebut(),'ISO-8859-1', 'UTF-8'), PDO::PARAM_STR);
-        $req->bindValue("dateFin",$uneTrace->getDateHeureFin()!= null ? mb_convert_encoding($uneTrace->getDateHeureFin(), 'UTF-8', 'ISO-8859-1'): PDO::PARAM_STR);
+        $req->bindValue("dateFin", $uneTrace->getDateHeureFin()!= null ? mb_convert_encoding($uneTrace->getDateHeureFin(), 'ISO-8859-1', 'UTF-8'): PDO::PARAM_STR);
         $req->bindValue("terminee",mb_convert_encoding($uneTrace->getTerminee(), 'ISO-8859-1', 'UTF-8'), PDO::PARAM_STR);
         $req->bindValue("idUtilisateur", mb_convert_encoding($uneTrace->getIdUtilisateur(), 'ISO-8859-1', 'UTF-8'),PDO::PARAM_INT);
         $req->execute();
