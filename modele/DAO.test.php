@@ -77,7 +77,6 @@ else {
 
 
 
-
 // test de la méthode getTousLesUtilisateurs ------------------------------------------------------
 // modifié par dP le 12/8/2018
 echo "<h3>Test de getTousLesUtilisateurs : </h3>";
@@ -89,8 +88,6 @@ foreach ($lesUtilisateurs as $unUtilisateur)
 {	echo ($unUtilisateur->toString());
     echo ('<br>');
 }
-
-
 
 
 // test de la méthode creerUnUtilisateur ----------------------------------------------------------
@@ -105,8 +102,6 @@ if ($ok)
 else {
     echo "<p>Echec lors de l'enregistrement de l'utilisateur !</p>";
 }
-
-
 
 
 // test de la méthode modifierMdpUtilisateur ------------------------------------------------------
@@ -130,8 +125,6 @@ else {
 }
 
 
-
-
 // test de la méthode supprimerUnUtilisateur ------------------------------------------------------
 // modifié par dP le 12/8/2018
 echo "<h3>Test de supprimerUnUtilisateur : </h3>";
@@ -149,8 +142,6 @@ if ($ok) {
 else {
     echo "<p>Echec lors de la suppression de l'utilisateur toto !</p>";
 }
-
-
 
 
 // test de la méthode envoyerMdp ------------------------------------------------------------------

@@ -160,15 +160,15 @@ class DAO
         }
         else {
             // création d'un objet Utilisateur
-            $unId = mb_convert_encoding($uneLigne->id, 'UTF-8', 'ISO-8859-1');
-            $unPseudo = mb_convert_encoding($uneLigne->pseudo, 'UTF-8', 'ISO-8859-1');
-            $unMdpSha1 = mb_convert_encoding($uneLigne->mdpSha1, 'UTF-8', 'ISO-8859-1');
-            $uneAdrMail = mb_convert_encoding($uneLigne->adrMail, 'UTF-8', 'ISO-8859-1');
-            $unNumTel = mb_convert_encoding($uneLigne->numTel, 'UTF-8', 'ISO-8859-1');
-            $unNiveau = mb_convert_encoding($uneLigne->niveau, 'UTF-8', 'ISO-8859-1');
-            $uneDateCreation = mb_convert_encoding($uneLigne->dateCreation, 'UTF-8', 'ISO-8859-1');
-            $unNbTraces = mb_convert_encoding($uneLigne->nbTraces, 'UTF-8', 'ISO-8859-1');
-            $uneDateDerniereTrace = $uneLigne->dateDerniereTrace != null ? mb_convert_encoding($uneLigne->dateDerniereTrace, 'UTF-8', 'ISO-8859-1'):"";
+            $unId = utf8_encode($uneLigne->id);
+            $unPseudo = utf8_encode($uneLigne->pseudo);
+            $unMdpSha1 = utf8_encode($uneLigne->mdpSha1);
+            $uneAdrMail = utf8_encode($uneLigne->adrMail);
+            $unNumTel = utf8_encode($uneLigne->numTel);
+            $unNiveau = utf8_encode($uneLigne->niveau);
+            $uneDateCreation = utf8_encode($uneLigne->dateCreation);
+            $unNbTraces = utf8_encode($uneLigne->nbTraces);
+            $uneDateDerniereTrace = utf8_encode($uneLigne->dateDerniereTrace);
 
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             return $unUtilisateur;
@@ -618,202 +618,105 @@ class DAO
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 3 (xxxxxxxxxxxxxxxxxxxx) : lignes 750 à 949
     // --------------------------------------------------------------------------------------
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    //    public function supprimerUneTrace($idTrace) {
+//        $uneTrace = $this->getUneTrace($idTrace);
+//        if ($uneTrace == null) {
+//            return false;
+//        }
+//        else {
+//            $idTrace = $uneTrace->getId();
+//            if ($idTrace != null) {
+//                foreach ($idTrace as $uneTrace) {
+//                    $this->supprimerUneTrace($uneTrace->getId());
+//                }
+//            }
+//            // préparation de la requête de suppression des autorisations
+//            $txt_req1 = "delete from tracegps_traces";
+//            $txt_req1 .= " where id = :idTrace or idTrace = :id";
+//            $req1 = $this->cnx->prepare($txt_req1);
+//            // liaison de la requête et de ses paramètres
+//            $req1->bindValue("id", utf8_decode($idTrace), PDO::PARAM_INT);
+//            // exécution de la requête
+//            $ok = $req1->execute();
+//
+//            // préparation de la requête de suppression de l'utilisateur
+//            $txt_req2 = "delete from tracegps_points";
+//            $txt_req2 .= " where idTrace = :idTrace";
+//            $req2 = $this->cnx->prepare($txt_req2);
+//            // liaison de la requête et de ses paramètres
+//            $req2->bindValue("pseudo", utf8_decode($idTrace), PDO::PARAM_STR);
+//            // exécution de la requête
+//            $ok = $req2->execute();
+//            return $ok;
+//        }
+//    }
+
+    public function supprimerUneTrace($idTrace){
+        $nbReponses = $this->getUneTrace($idTrace);
+
+        // si une autorisation existe, on la supprime
+        if ($nbReponses!= null ) {
+            $txt_req = "DELETE FROM tracegps_points";
+            $txt_req .= " WHERE idTrace = :idTrace";
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+            $ok = $req->execute();
+
+            $txt_req = "DELETE FROM tracegps_traces";
+            $txt_req .= " WHERE id = :idTrace";
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+            $ok = $req->execute();
+            $req->closeCursor();
+
+            return $ok; // si tout est bon on retourne ok
+        } else {
+            // suppression impossible, la ligne n'existe pas
+            return false;
+        }
+    }
+
+    public function terminerUneTrace($idTrace) {
+        $uneTrace = $this->getUneTrace($idTrace);
+        if ($uneTrace == null) {
+            return false;
+        }
+        else {
+            $txt_req = "SELECT `dateHeure` FROM `tracegps_points` ";
+            $txt_req .= " WHERE idTrace = :idTrace";
+            $txt_req .= " AND id = (SELECT MAX(id) FROM tracegps_points WHERE idTrace = :idTrace)";
+            $req = $this->cnx->prepare($txt_req);
+            $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+            $ok = $req->execute();
+            $reponse = $req->fetchAll(PDO::FETCH_OBJ);
+
+            if (empty($reponse))
+            {
+                $txt_req = "UPDATE tracegps_traces SET dateFin = now(), terminee = 1";
+                $txt_req .= " WHERE  id = :idTrace";
+                $req = $this->cnx->prepare($txt_req);
+                $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+                $ok = $req->execute();
+                return $ok;
+            }
+
+            else {
+
+                $dateFin = $reponse[0]->dateHeure;
+
+                $txt_req = "UPDATE tracegps_traces SET dateFin = :dateFin, terminee = 1";
+                $txt_req .= " WHERE  id = :idTrace";
+                $req = $this->cnx->prepare($txt_req);
+                $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+                $req->bindValue(":dateFin", $dateFin, PDO::PARAM_STR);
+                $ok = $req->execute();
+                return $ok;
+            }
+
+        }
+    }
+
    
     // --------------------------------------------------------------------------------------
     // début de la zone attribuée au développeur 4 (xxxxxxxxxxxxxxxxxxxx) : lignes 950 à 1150

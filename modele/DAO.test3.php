@@ -33,14 +33,31 @@ $dao = new DAO();
 
 // test de la méthode xxxxxxxxxxxxxxxxxxxxxxxxxxx ----------------------------------------------------------
 // modifié par xxxxxxxxxxxxxxxxx le xxxxxxxxxx
-echo "<h3>Test de xxxxxxxxxxxxxxxxx : </h3>";
-// A CONTINUER .........
+echo "<h3>Test de supprimerUneTrace : </h3>";
+$ok = $dao->supprimerUneTrace(22);
+if ($ok) {
+    echo "<p>Trace bien supprimée !</p>";
+}
+else {
+    echo "<p>Echec lors de la suppression de la trace !</p>";
+}
 
-
-
-
-
-
+// test des méthodes creerUnPointDeTrace et terminerUneTrace --------------------------------------
+echo "<h3>Test de terminerUneTrace : </h3>";
+// on choisit une trace non terminée
+$unIdTrace = 26;
+// on l'affiche
+$laTrace = $dao->getUneTrace($unIdTrace);
+echo "<h4>l'objet laTrace avant l'appel de la méthode terminerUneTrace : </h4>";
+echo ($laTrace->toString());
+echo ('<br>');
+// on la termine
+$dao->terminerUneTrace($unIdTrace);
+// et on l'affiche à nouveau
+$laTrace = $dao->getUneTrace($unIdTrace);
+echo "<h4>l'objet laTrace après l'appel de la méthode terminerUneTrace : </h4>";
+echo ($laTrace->toString());
+echo ('<br>');
 
 
 // ferme la connexion à MySQL :
