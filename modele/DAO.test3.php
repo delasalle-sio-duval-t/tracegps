@@ -45,7 +45,7 @@ else {
 // test des méthodes creerUnPointDeTrace et terminerUneTrace --------------------------------------
 echo "<h3>Test de terminerUneTrace : </h3>";
 // on choisit une trace non terminée
-$unIdTrace = 3;
+$unIdTrace = 26;
 // on l'affiche
 $laTrace = $dao->getUneTrace($unIdTrace);
 echo "<h4>l'objet laTrace avant l'appel de la méthode terminerUneTrace : </h4>";

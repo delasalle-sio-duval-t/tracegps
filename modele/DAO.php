@@ -782,29 +782,15 @@ class DAO
 //    }
 
     public function supprimerUneTrace($idTrace){
-        // prération de la requête SQL
-        $txt_req = "SELECT COUNT(*)";
-        $txt_req .= " FROM tracegps_points";
-        $txt_req .= " WHERE idTrace = :idTrace";
-
-        $req = $this->cnx->prepare($txt_req);
-
-        // liaison des paramètres
-        $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
-        // exécution
-        $req->execute();
-        $nbReponses = $req->fetchColumn(0);
-        // fermeture de la requete
-        $req->closeCursor();
+        $nbReponses = $this->getUneTrace($idTrace);
 
         // si une autorisation existe, on la supprime
-        if ($nbReponses > 0) {
+        if ($nbReponses!= null ) {
             $txt_req = "DELETE FROM tracegps_points";
             $txt_req .= " WHERE idTrace = :idTrace";
             $req = $this->cnx->prepare($txt_req);
             $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
             $ok = $req->execute();
-            $req->closeCursor();
 
             $txt_req = "DELETE FROM tracegps_traces";
             $txt_req .= " WHERE id = :idTrace";
@@ -826,6 +812,36 @@ class DAO
            return false;
        }
        else {
+           $txt_req = "SELECT `dateHeure` FROM `tracegps_points` ";
+           $txt_req .= " WHERE idTrace = :idTrace";
+           $txt_req .= " AND id = (SELECT MAX(id) FROM tracegps_points WHERE idTrace = :idTrace)";
+           $req = $this->cnx->prepare($txt_req);
+           $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+           $ok = $req->execute();
+           $reponse = $req->fetchAll(PDO::FETCH_OBJ);
+
+           if (empty($reponse))
+           {
+               $txt_req = "UPDATE tracegps_traces SET dateFin = now(), terminee = 1";
+               $txt_req .= " WHERE  id = :idTrace";
+               $req = $this->cnx->prepare($txt_req);
+               $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+               $ok = $req->execute();
+               return $ok;
+           }
+
+           else {
+
+           $dateFin = $reponse[0]->dateHeure;
+
+           $txt_req = "UPDATE tracegps_traces SET dateFin = :dateFin, terminee = 1";
+           $txt_req .= " WHERE  id = :idTrace";
+           $req = $this->cnx->prepare($txt_req);
+           $req->bindValue(":idTrace", $idTrace, PDO::PARAM_INT);
+           $req->bindValue(":dateFin", $dateFin, PDO::PARAM_STR);
+           $ok = $req->execute();
+           return $ok;
+           }
 
        }
     }
@@ -1046,8 +1062,8 @@ class DAO
         // Création de l’objet Trace
         $uneTrace = new Trace(
             $uneLigne->id,
-            $uneLigne->dateHeureDebut,
-            $uneLigne->dateHeureFin,
+            $uneLigne->dateDebut,
+            $uneLigne->dateFin,
             $uneLigne->terminee,
             $uneLigne->idUtilisateur
         );
