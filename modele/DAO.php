@@ -450,7 +450,7 @@ class DAO
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
 
         // construction d'une collection d'objets Utilisateur
-        $Utilisateur = array();
+        $Utilisateurs = array();
         // tant qu'une ligne est trouvée :
         while ($uneLigne) {
             // création d'un objet Utilisateur
@@ -466,14 +466,14 @@ class DAO
 
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
-            $Utilisateur[] = $unUtilisateur;
+            $Utilisateurs[] = $unUtilisateur;
             // extrait la ligne suivante
             $uneLigne = $req->fetch(PDO::FETCH_OBJ);
         }
         // libère les ressources du jeu de données
         $req->closeCursor();
         // fourniture de la collection
-        return $Utilisateur;
+        return $Utilisateurs;
     }
 
     public function getLesUtilisateursAutorises($idUtilisateur){
@@ -494,7 +494,7 @@ class DAO
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);
 
         // construction d'une collection d'objets Utilisateur
-        $Utilisateur = array();
+        $Utilisateurs = array();
         // tant qu'une ligne est trouvée :
         while ($uneLigne) {
             // création d'un objet Utilisateur
@@ -510,14 +510,14 @@ class DAO
 
             $unUtilisateur = new Utilisateur($unId, $unPseudo, $unMdpSha1, $uneAdrMail, $unNumTel, $unNiveau, $uneDateCreation, $unNbTraces, $uneDateDerniereTrace);
             // ajout de l'utilisateur à la collection
-            $Utilisateur[] = $unUtilisateur;
+            $Utilisateurs[] = $unUtilisateur;
             // extrait la ligne suivante
             $uneLigne = $req->fetch(PDO::FETCH_OBJ);
         }
         // libère les ressources du jeu de données
         $req->closeCursor();
         // fourniture de la collection
-        return $Utilisateur;
+        return $Utilisateurs;
     }
 
     public function autoriseAConsulter($idAutorisant, $idAutorise)
@@ -546,25 +546,29 @@ class DAO
 
     public function creerUneAutorisation($idAutorisant, $idAutorise)
     {
-        // prération de la requête SQL
-        $txt_req = "SELECT COUNT(*)";
-        $txt_req .= " FROM tracegps_autorisations";
-        $txt_req .= " WHERE idAutorisant = :idAutorisant";
-        $txt_req .= " AND idAutorise = :idAutorise";
+//        // prération de la requête SQL
+//        $txt_req = "SELECT COUNT(*)";
+//        $txt_req .= " FROM tracegps_autorisations";
+//        $txt_req .= " WHERE idAutorisant = :idAutorisant";
+//        $txt_req .= " AND idAutorise = :idAutorise";
+//
+//
+//
+//        $req = $this->cnx->prepare($txt_req);
+//
+//        // liaison des paramètres
+//        $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
+//        $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
+//        // exécution
+//        $req->execute();
+//        $nbReponses = $req->fetchColumn(0);
+//        // fermeture de la requete
+//        $req->closeCursor();
 
-        $req = $this->cnx->prepare($txt_req);
-
-        // liaison des paramètres
-        $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
-        $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
-        // exécution
-        $req->execute();
-        $nbReponses = $req->fetchColumn(0);
-        // fermeture de la requete
-        $req->closeCursor();
+        $ok = $this->autoriseAConsulter($idAutorisant, $idAutorise);
 
         // si aucune autorisation n'existe, on l'insère
-        if ($nbReponses == 0) {
+        if (!$ok) {
             $txt_req = "INSERT INTO tracegps_autorisations (idAutorisant, idAutorise)";
             $txt_req .= " VALUES (:idAutorisant, :idAutorise)";
             $req = $this->cnx->prepare($txt_req);
@@ -581,25 +585,11 @@ class DAO
     }
 
     public function supprimerUneAutorisation($idAutorisant, $idAutorise){
-        // prération de la requête SQL
-        $txt_req = "SELECT COUNT(*)";
-        $txt_req .= " FROM tracegps_autorisations";
-        $txt_req .= " WHERE idAutorisant = :idAutorisant";
-        $txt_req .= " AND idAutorise = :idAutorise";
 
-        $req = $this->cnx->prepare($txt_req);
-
-        // liaison des paramètres
-        $req->bindValue(":idAutorisant", $idAutorisant, PDO::PARAM_INT);
-        $req->bindValue(":idAutorise", $idAutorise, PDO::PARAM_INT);
-        // exécution
-        $req->execute();
-        $nbReponses = $req->fetchColumn(0);
-        // fermeture de la requete
-        $req->closeCursor();
+        $ok = $this->autoriseAConsulter($idAutorisant, $idAutorise);
 
         // si une autorisation existe, on la supprime
-        if ($nbReponses > 0) {
+        if ($ok > 0) {
             $txt_req = "DELETE FROM tracegps_autorisations";
             $txt_req .= " WHERE idAutorisant = :idAutorisant";
             $txt_req .= " AND idAutorise = :idAutorise";
@@ -653,10 +643,10 @@ class DAO
 //    }
 
     public function supprimerUneTrace($idTrace){
-        $nbReponses = $this->getUneTrace($idTrace);
+        $uneTrace = $this->getUneTrace($idTrace);
 
         // si une autorisation existe, on la supprime
-        if ($nbReponses!= null ) {
+        if ($uneTrace!= null ) {
             $txt_req = "DELETE FROM tracegps_points";
             $txt_req .= " WHERE idTrace = :idTrace";
             $req = $this->cnx->prepare($txt_req);
