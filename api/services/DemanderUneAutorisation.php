@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] != "GET")
 }
 else {
     // Les paramètres doivent être présents
-    if ($pseudo == "" || $mdp == "" || $pseudoDestinataire == "" || $texteMessage == "" || $nomPrenom = "" ) {
+    if ($pseudo == "" || $mdp == "" || $pseudoDestinataire == "" || $texteMessage == "" || $nomPrenom == "" ) {
         $message = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
@@ -47,8 +47,6 @@ else {
         else
         {	$utilisateurDemandeur = $dao->getUnUtilisateur($pseudo);
             $utilisateurDestinataire = $dao->getUnUtilisateur($pseudoDestinataire);
-            $idAutorisant = $utilisateurDestinataire->getId();
-            $idAutorise = $utilisateurDemandeur->getId();
             $adrMailDemandeur = $utilisateurDemandeur->getAdrMail();
             $adrMailDestinaire = $utilisateurDestinataire->getAdrMail();
             $numTelDemandeur = $utilisateurDemandeur->getNumTel();
@@ -64,10 +62,10 @@ else {
             $contenuMail .= "Son nom et prénom : ". $nomPrenom . "\n";
             $contenuMail .= "Son message : ". $texteMessage . "\n\n";
             $contenuMail .= "Pour accepter la demande, cliquez sur ce lien :\n";
-            $contenuMail .= "http://localhost:63342/TRACEGPS/api/services/ValiderDemandeAutorisation.php?a=". $mdp;
+            $contenuMail .= "http://localhost/ws-php-RD/TRACEGPS/api/ValiderDemandeAutorisation?a=". $mdp;
             $contenuMail .= "&b=" . $pseudoDestinataire ."&c=" . $pseudo ."&d=1\n\n";
             $contenuMail .= "Pour refuser la demande, cliquez sur ce lien :\n";
-            $contenuMail .= "http://localhost:63342/TRACEGPS/api/services/ValiderDemandeAutorisation.php?a=". $mdp;
+            $contenuMail .= "http://localhost/ws-php-RD/TRACEGPS/api/ValiderDemandeAutorisation?a=". $mdp;
             $contenuMail .= "&b=" . $pseudoDestinataire ."&c=" . $pseudo ."&d=0";
             $ok = Outils::envoyerMail($adrMailDestinaire, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
             if ( ! $ok ) {
