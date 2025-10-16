@@ -18,17 +18,19 @@
 // ces variables globales sont définies dans le fichier modele/parametres.php
 global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
 
+include_once ('C:\wamp64\www\ws-php-RD\TRACEGPS\modele\DAO.php');
+
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
 // Récupération des données transmises
-$mdpSha1 = ( empty($this->request['a'])) ? "" : $this->request['a'];
-$pseudoAutorisant = ( empty($this->request['b'])) ? "" : $this->request['b'];
-$pseudoAutorise = ( empty($this->request['c'])) ? "" : $this->request['c'];
-$decision = ( empty($this->request['d'])) ? "" : $this->request['d'];
+$mdpSha1 = ( empty($_GET['a'])) ? "" : $_GET['a'];
+$pseudoAutorisant = ( empty($_GET['b'])) ? "" : $_GET['b'];
+$pseudoAutorise = ( empty($_GET['c'])) ? "" : $_GET['c'];
+$decision = (int) (( empty($_GET['d'])) ? "" : $_GET['d']);
 			 
 // La méthode HTTP utilisée doit être GET
-if ($this->getMethodeRequete() != "GET")
+if ($_SERVER['REQUEST_METHOD'] != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }

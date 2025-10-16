@@ -15,21 +15,23 @@
 // Les paramètres doivent être passés par la méthode GET :
 //     http://<hébergeur>/tracegps/api/ChangerDeMdppseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&nouveauMdp=123&confirmationMdp=123&lang=xml
 
+include_once ('C:\wamp64\www\ws-php-RD\TRACEGPS\modele\DAO.php');
+
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 	
 // Récupération des données transmises
-$pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
-$mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$nouveauMdp = ( empty($this->request['nouveauMdp'])) ? "" : $this->request['nouveauMdp'];
-$confirmationMdp = ( empty($this->request['confirmationMdp'])) ? "" : $this->request['confirmationMdp'];
-$lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
+$pseudo = ( empty($_GET['pseudo'])) ? "" : $_GET['pseudo'];
+$mdpSha1 = ( empty($_GET['mdp'])) ? "" : $_GET['mdp'];
+$nouveauMdp = ( empty($_GET['nouveauMdp'])) ? "" : $_GET['nouveauMdp'];
+$confirmationMdp = ( empty($_GET['confirmationMdp'])) ? "" : $_GET['confirmationMdp'];
+$lang = ( empty($_GET['lang'])) ? "" : $_GET['lang'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
 
 // La méthode HTTP utilisée doit être GET
-if ($this->getMethodeRequete() != "GET")
+if ($_SERVER['REQUEST_METHOD'] != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
@@ -40,7 +42,7 @@ else {
         $code_reponse = 400;
     }
     else {
-        if ( strlen($nouveauMdp) < 3 ) {
+        if ( strlen($nouveauMdp) < 8 ) {
             $msg = 'Erreur : le mot de passe doit comporter au moins 8 caractères.';
             $code_reponse = 400;
         }
@@ -92,7 +94,9 @@ else {
 }
 
 // envoi de la réponse HTTP
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;

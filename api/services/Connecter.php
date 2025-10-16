@@ -28,15 +28,15 @@ include_once ('C:\wamp64\www\ws-php-RD\TRACEGPS\modele\DAO.php');
 $dao = new DAO();
 
 // Récupération des données transmises
-$pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
-$mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
+$pseudo = ( empty($_GET['pseudo'])) ? "" : $_GET['pseudo'];
+$mdpSha1 = ( empty($_GET['mdp'])) ? "" : $_GET['mdp'];
+$lang = ( empty($_GET['lang'])) ? "" : $_GET['lang'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
 
 // La méthode HTTP utilisée doit être GET
-if ($this->getMethodeRequete() != "GET")
+if ($_SERVER['REQUEST_METHOD'] != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
@@ -76,7 +76,10 @@ else {
 }
 
 // envoi de la réponse HTTP
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
