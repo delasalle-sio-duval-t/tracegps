@@ -45,7 +45,7 @@ else {
             $msg = "Erreur : pseudo inexistant.";
             $code_reponse = 400;
         } else {
-            // génération d’un nouveau mot de passe aléatoire (8 caracteres/4 syllable)
+            // génération d’un nouveau mdp aleatoire (8 caracteres/4 syllable)
             $nouveauMdp = genererMdp();
             // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en sha1
             $ok = $dao->modifierMdpUtilisateur($pseudo, sha1($nouveauMdp));
