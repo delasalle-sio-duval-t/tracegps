@@ -37,7 +37,7 @@ if ($lang != "json") $lang = "xml";
 
 // La méthode HTTP utilisée doit être GET
 if ($_SERVER['REQUEST_METHOD'] != "GET")
-{   $msg = "Erreur : méthode HTTP incorrecte.";
+{	$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
 else {

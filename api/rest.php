@@ -119,9 +119,8 @@ class Rest {
 			foreach ($data as $cle => $valeur){
 				$lesEntrees[$cle] = $this->remettreEnFormeLesEntrees($valeur);
 			}
-		} else
-        {
-            $data = trim(stripslashes($data));
+		} else {
+            $data = stripslashes($data);
 			$data = strip_tags($data);
 			$lesEntrees = trim($data);
 		}
