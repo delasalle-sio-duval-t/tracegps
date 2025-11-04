@@ -46,22 +46,22 @@ else {
 		$msg = "Erreur : authentification incorrecte.";
 		$code_reponse = 401;
 	}
-	else
-	{  // récupération de la liste des utilisateurs à l'aide de la méthode getTousLesUtilisateurs de la classe DAO
-		$lesUtilisateurs = $dao->getTousLesUtilisateurs();
+        else
+        {  // récupération de la liste des utilisateurs à l'aide de la méthode getTousLesUtilisateurs de la classe DAO
+            $lesUtilisateurs = $dao->getTousLesUtilisateurs();
 
-		// mémorisation du nombre d'utilisateurs
-		$nbReponses = sizeof($lesUtilisateurs);
+            // mémorisation du nombre d'utilisateurs
+            $nbReponses = sizeof($lesUtilisateurs);
 
-		if ($nbReponses == 0) {
-			$msg = "Aucun utilisateur.";
-			$code_reponse = 200;
-		}
-		else {
-			$msg = $nbReponses . " utilisateur(s).";
-			$code_reponse = 200;
-		}
-	}
+            if ($nbReponses == 0) {
+                $msg = "Aucun utilisateur.";
+                $code_reponse = 200;
+            }
+            else {
+                $msg = $nbReponses . " utilisateur(s).";
+                $code_reponse = 200;
+            }
+        }
 	}
 }
 // ferme la connexion à MySQL :
