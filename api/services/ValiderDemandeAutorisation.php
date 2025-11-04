@@ -18,7 +18,7 @@
 // ces variables globales sont définies dans le fichier modele/parametres.php
 global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
 
-include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\DAO.php');
+include_once ('Insérez chemin DAO.php ici');
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -83,7 +83,8 @@ else {
                             $code_reponse = 500;
                         }
                         else {
-                            $message = "Autorisation enregistrée.<br>Le demandeur va recevoir un courriel de confirmation.";
+                            $message = "Autorisation enregistrée.
+Le demandeur va recevoir un courriel de confirmation.";
                             $code_reponse = 200;
                         }
                     }
@@ -102,7 +103,8 @@ else {
                         $code_reponse = 500;
                     }
                     else {
-                        $message = "Autorisation refusée.<br>Le demandeur va recevoir un courriel de confirmation.";
+                        $message = "Autorisation refusée.
+Le demandeur va recevoir un courriel de confirmation.";
                         $code_reponse = 200;
                     }
                 }
