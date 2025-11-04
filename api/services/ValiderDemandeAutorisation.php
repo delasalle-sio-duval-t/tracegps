@@ -68,44 +68,46 @@ else {
                     if ( ! $ok )
                     {   $message = "Erreur : problème lors de l'enregistrement.";
                         $code_reponse = 500;
-        		    }
-        		    else
-        		    {   // envoi d'un mail d'acceptation à l'intéressé
-            			$sujetMail = "Votre demande d'autorisation à un utilisateur du système TraceGPS";
-            			$contenuMail = "Cher ou chère " . $pseudoAutorise . "\n\n";
-            			$contenuMail .= "Vous avez demandé à " . $pseudoAutorisant . " l'autorisation de consulter ses parcours.\n";
-            			$contenuMail .= "Votre demande a été acceptée.\n\n";
-            			$contenuMail .= "Cordialement.\n";
-            			$contenuMail .= "L'administrateur du système TraceGPS";
-            			$ok = Outils::envoyerMail($adrMailDemandeur, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
-            			if ( ! $ok ) {
-            			    $message = "Erreur : l'envoi du courriel au demandeur a rencontré un problème.";
-            			    $code_reponse = 500;
-            			}
-            			else {
-            			    $message = "Autorisation enregistrée.<br>Le demandeur va recevoir un courriel de confirmation.";
-            			    $code_reponse = 200;
-            			}
-            		}
-        		}
-        		else {    // refus de la demande
-        			// envoi d'un mail de rejet à l'intéressé
-        		    $sujetMail = "Votre demande d'autorisation à un utilisateur du système TraceGPS";
-        		    $contenuMail = "Cher ou chère " . $pseudoAutorise . "\n\n";
-        		    $contenuMail .= "Vous avez demandé à " . $pseudoAutorisant . " l'autorisation de consulter ses parcours.\n";
-        		    $contenuMail .= "Votre demande a été refusée.\n\n";
-        		    $contenuMail .= "Cordialement.\n";
-        		    $contenuMail .= "L'administrateur du système TraceGPS";
-        		    $ok = Outils::envoyerMail($adrMailDemandeur, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
-        		    if ( ! $ok ) {
-        		        $message = "Erreur : l'envoi du courriel au demandeur a rencontré un problème.";
-        		        $code_reponse = 500;
-        		    }
-        		    else {
-    			        $message = "Autorisation refusée.<br>Le demandeur va recevoir un courriel de confirmation.";
-    			        $code_reponse = 200;
-        		    }
-        		}
+                    }
+                    else
+                    {   // envoi d'un mail d'acceptation à l'intéressé
+                        $sujetMail = "Votre demande d'autorisation à un utilisateur du système TraceGPS";
+                        $contenuMail = "Cher ou chère " . $pseudoAutorise . "\n\n";
+                        $contenuMail .= "Vous avez demandé à " . $pseudoAutorisant . " l'autorisation de consulter ses parcours.\n";
+                        $contenuMail .= "Votre demande a été acceptée.\n\n";
+                        $contenuMail .= "Cordialement.\n";
+                        $contenuMail .= "L'administrateur du système TraceGPS";
+                        $ok = Outils::envoyerMail($adrMailDemandeur, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
+                        if ( ! $ok ) {
+                            $message = "Erreur : l'envoi du courriel au demandeur a rencontré un problème.";
+                            $code_reponse = 500;
+                        }
+                        else {
+                            $message = "Autorisation enregistrée.
+Le demandeur va recevoir un courriel de confirmation.";
+                            $code_reponse = 200;
+                        }
+                    }
+                }
+                else {    // refus de la demande
+                    // envoi d'un mail de rejet à l'intéressé
+                    $sujetMail = "Votre demande d'autorisation à un utilisateur du système TraceGPS";
+                    $contenuMail = "Cher ou chère " . $pseudoAutorise . "\n\n";
+                    $contenuMail .= "Vous avez demandé à " . $pseudoAutorisant . " l'autorisation de consulter ses parcours.\n";
+                    $contenuMail .= "Votre demande a été refusée.\n\n";
+                    $contenuMail .= "Cordialement.\n";
+                    $contenuMail .= "L'administrateur du système TraceGPS";
+                    $ok = Outils::envoyerMail($adrMailDemandeur, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
+                    if ( ! $ok ) {
+                        $message = "Erreur : l'envoi du courriel au demandeur a rencontré un problème.";
+                        $code_reponse = 500;
+                    }
+                    else {
+                        $message = "Autorisation refusée.
+Le demandeur va recevoir un courriel de confirmation.";
+                        $code_reponse = 200;
+                    }
+                }
             }
         }
     }
