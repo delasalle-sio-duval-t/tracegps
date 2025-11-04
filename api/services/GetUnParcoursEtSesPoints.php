@@ -46,7 +46,7 @@ else {// Les paramètres doivent être présents
                 $autorise = $dao->getLesUtilisateursAutorises($idUtilisateur);
 
                 if ($idUtilisateur != $unUtilisateur->getId() || $autorise != $idUtilisateur) {
-                    $msg = " Erreur : vous n'etes pas le propriétaire du parcours.";
+                    $msg = " Données de la trace demandée.";
                     $code_reponse = 409;
                 } else {
                     $dao->getUneTrace($idTrace);
