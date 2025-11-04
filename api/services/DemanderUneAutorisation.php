@@ -1,6 +1,6 @@
 <?php
 
-include_once ('C:\wamp64\www\ws-php-RD\TRACEGPS\modele\DAO.php');
+include_once ('C:\wamp64\www\ws-php-td\modele\DAO.php');
 
 global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
 
