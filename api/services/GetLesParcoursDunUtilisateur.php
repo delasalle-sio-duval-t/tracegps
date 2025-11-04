@@ -2,7 +2,7 @@
 // Projet TraceGPS - services web
 // Dernière mise à jour : 3/7/2021 par dP
 
-include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\DAO.php');
+include_once ('C:\wamp64\www\ws-php-lb\TraceGPS\modele\DAO.php');
 
 
 // connexion du serveur web à la base MySQL
