@@ -2,8 +2,6 @@
 // Projet TraceGPS - services web
 // Dernière mise à jour : 3/7/2021 par dP
 
-include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\DAO.php');
-
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -81,9 +79,7 @@ else {
 }
 
 // envoi de la réponse HTTP
-http_response_code($code_reponse);
-header("Content-Type: " . $content_type);
-echo $donnees;
+$this->envoyerReponse($code_reponse, $content_type, $donnees);
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;

@@ -2,9 +2,6 @@
 // projet TraceGps - web
 // fichier :  api/services/EnvoyerPosition.php
 // dernière modification : 16/10/2025 par kG
-
-include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\PointDeTrace.php');
-include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\DAO.php');
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -91,9 +88,7 @@ else {
 
 // envoi de la réponse HTTP
 
-http_response_code($code_reponse);
-header("Content-Type: " . $content_type);
-echo $donnees;
+$this->envoyerReponse($code_reponse, $content_type, $donnees);
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;

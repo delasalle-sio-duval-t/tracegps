@@ -17,8 +17,6 @@
 // Les paramètres doivent être passés par la méthode GET :
 //     http://<hébergeur>/tracegps/api/GetTousLesUtilisateurs?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
 
-include_once ('C:\wamp64\www\ws-php-kg\TraceGPS\modele\DAO.php');
-
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -83,9 +81,7 @@ else {
 }
 
 // envoi de la réponse HTTP
-http_response_code($code_reponse);
-header("Content-Type: " . $content_type);
-echo $donnees;
+$this->envoyerReponse($code_reponse, $content_type, $donnees);
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
