@@ -2,6 +2,8 @@
 // Projet TraceGPS - services web
 // Dernière mise à jour : 3/7/2021 par dP
 
+include_once ('C:\wamp64\www\ws-php-td\modele\DAO.php');
+
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -41,26 +43,26 @@ else {
             $code_reponse = 404;
         }
         else {
-                $utilisateur = $dao->getUnUtilisateur($pseudo);
-                $utilisateurConsulte = $dao->getUnUtilisateur($pseudoConsulte);
-                $id = $utilisateur->getId();
-                $idConsulte = $utilisateurConsulte->getId();
+            $utilisateur = $dao->getUnUtilisateur($pseudo);
+            $utilisateurConsulte = $dao->getUnUtilisateur($pseudoConsulte);
+            $id = $utilisateur->getId();
+            $idConsulte = $utilisateurConsulte->getId();
 
-                if (!($dao->autoriseAConsulter($idConsulte, $id))) {
-                    $msg = "Erreur : vous n'êtes pas autorisé par cet utilisateur.";
-                    $code_reponse = 401;
+            if (!($dao->autoriseAConsulter($idConsulte, $id))) {
+                $msg = "Erreur : vous n'êtes pas autorisé par cet utilisateur.";
+                $code_reponse = 401;
+            } else {
+                $trace = $dao->getLesTraces($idConsulte);
+                $nbTrace = sizeof($trace);
+
+                if ($nbTrace != 0) {
+                    $msg = $nbTrace . " trace pour l'utilisateur " . $pseudoConsulte;
+                    $code_reponse = 200;
                 } else {
-                    $trace = $dao->getLesTraces($idConsulte);
-                    $nbTrace = sizeof($trace);
-
-                    if ($nbTrace != 0) {
-                        $msg = $nbTrace . " trace pour l'utilisateur " . $pseudoConsulte;
-                        $code_reponse = 200;
-                    } else {
-                        $msg = "Aucune trace pour l'utilisateur " . $pseudoConsulte;
-                        $code_reponse = 200;
-                    }
+                    $msg = "Aucune trace pour l'utilisateur " . $pseudoConsulte;
+                    $code_reponse = 200;
                 }
+            }
         }
     }
     }
@@ -79,7 +81,9 @@ else {
 }
 
 // envoi de la réponse HTTP
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;

@@ -14,6 +14,8 @@
 // Les paramètres doivent être passés par la méthode GET :
 //     http://<hébergeur>/tracegps/api/SupprimerUnUtilisateur?pseudo=admin&mdp=ff9fff929a1292db1c00e3142139b22ee4925177&pseudoAsupprimer=oxygen&lang=xml
 
+include_once ('C:\wamp64\www\ws-php-td\modele\DAO.php');
+
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -103,7 +105,9 @@ else {
 }
 
 // envoi de la réponse HTTP
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;

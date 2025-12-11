@@ -22,6 +22,8 @@
 // curl -i -X GET "http://sio.lyceedelasalle.fr/tracegps/api/Connecterr?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=json"
 // curl -i -X GET "http://sio.lyceedelasalle.fr/tracegps/api/connecter?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=json"
 
+include_once ('C:\wamp64\www\ws-php-td\modele\DAO.php');
+
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -75,7 +77,9 @@ else {
 
 // envoi de la réponse HTTP
 
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;

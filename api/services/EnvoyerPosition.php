@@ -2,6 +2,9 @@
 // projet TraceGps - web
 // fichier :  api/services/EnvoyerPosition.php
 // dernière modification : 16/10/2025 par kG
+
+include_once ('C:\wamp64\www\ws-php-td\modele\PointDeTrace.php');
+include_once ('C:\wamp64\www\ws-php-td\modele\DAO.php');
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -55,22 +58,22 @@ else {// Les paramètres doivent être présents
                     $code_reponse = 409;
                 }
 
-                 else {
-                     $uneTraceTerminee = $uneTrace->getTerminee();
+                else {
+                    $uneTraceTerminee = $uneTrace->getTerminee();
 
-                     if ($uneTraceTerminee == 1) {
-                         $msg = " Erreur : la trace est déjà terminée.";
-                         $code_reponse = 409;
-                     }
+                    if ($uneTraceTerminee == 1) {
+                        $msg = " Erreur : la trace est déjà terminée.";
+                        $code_reponse = 409;
+                    }
 
-                     else {
+                    else {
 
-                         $point = new PointDeTrace($idTrace,sizeof($dao->getLesPointsDeTrace($idTrace))+1, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio,0,0,0);
-                         $dao->creerUnPointDeTrace($point);
-                         $msg = "Point créé";
-                         $code_reponse = 201;
-                     }
-                 }
+                        $point = new PointDeTrace($idTrace,sizeof($dao->getLesPointsDeTrace($idTrace))+1, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio,0,0,0);
+                        $dao->creerUnPointDeTrace($point);
+                        $msg = "Point créé";
+                        $code_reponse = 201;
+                    }
+                }
             }
         }
     }
@@ -87,7 +90,10 @@ else {
 }
 
 // envoi de la réponse HTTP
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
@@ -162,4 +168,3 @@ function creerFluxJSON($msg)
 
 // ================================================================================================
 ?>
-
