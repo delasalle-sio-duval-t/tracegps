@@ -11,6 +11,8 @@
 //     lang : le langage utilisé pour le flux de données ("xml" ou "json")
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
 
+include_once ('C:\wamp64\www\ws-php-kg\TraceGPS\modele\DAO.php');
+
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -85,7 +87,9 @@ else {
 }
 
 // envoi de la réponse HTTP
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
 

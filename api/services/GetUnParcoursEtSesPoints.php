@@ -3,6 +3,8 @@
 // fichier :  api/services/EnvoyerPosition.php
 // dernière modification : 16/10/2025 par kG
 
+include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\PointDeTrace.php');
+include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\DAO.php');
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -44,7 +46,7 @@ else {// Les paramètres doivent être présents
                 $autorise = $dao->getLesUtilisateursAutorises($idUtilisateur);
 
                 if ($idUtilisateur != $unUtilisateur->getId() || $autorise != $idUtilisateur) {
-                    $msg = " Données de la trace demandée.";
+                    $msg = " Erreur : vous n'etes pas le propriétaire du parcours.";
                     $code_reponse = 409;
                 } else {
                     $dao->getUneTrace($idTrace);
@@ -67,7 +69,9 @@ else {
 
 // envoi de la réponse HTTP
 
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
@@ -142,4 +146,3 @@ function creerFluxJSON($msg)
 
 // ================================================================================================
 ?>
-
