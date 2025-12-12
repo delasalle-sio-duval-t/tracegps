@@ -201,7 +201,7 @@ class Outils
 	    $message = str_replace("&", "$$", $message);
 	    
 	    // préparation de l'URL du service web avec ses paramètres
-	    $urlService = "http://sio.lyceedelasalle.fr/tracegps/services/ServiceEnvoyerMail.php";
+	    $urlService = "https://sio.lyceedelasalle.fr/tracegps/services/ServiceEnvoyerMail.php";
 	    $urlService .= "?adresseDestinataire=" . $adresseDestinataire;
 	    $urlService .= "&sujet=" . $sujet;
 	    $urlService .= "&message=" . $message;
