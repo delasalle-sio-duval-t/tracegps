@@ -1,6 +1,6 @@
 <?php
 
-include_once ('C:\wamp64\www\ws-php-kg\TRACEGPS\modele\DAO.php');
+include_once ('C:\wamp64\www\ws-php-RD\TRACEGPS\modele\DAO.php');
 
 global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
 
@@ -62,10 +62,10 @@ else {
             $contenuMail .= "Son nom et prénom : ". $nomPrenom . "\n";
             $contenuMail .= "Son message : ". $texteMessage . "\n\n";
             $contenuMail .= "Pour accepter la demande, cliquez sur ce lien :\n";
-            $contenuMail .= "http://localhost/ws-php-kg/TRACEGPS/api/ValiderDemandeAutorisation?a=". $mdp;
+            $contenuMail .= "http://localhost/ws-php-RD/TRACEGPS/api/ValiderDemandeAutorisation?a=". $mdp;
             $contenuMail .= "&b=" . $pseudoDestinataire ."&c=" . $pseudo ."&d=1\n\n";
             $contenuMail .= "Pour refuser la demande, cliquez sur ce lien :\n";
-            $contenuMail .= "http://localhost/ws-php-kg/TRACEGPS/api/ValiderDemandeAutorisation?a=". $mdp;
+            $contenuMail .= "http://localhost/ws-php-RD/TRACEGPS/api/ValiderDemandeAutorisation?a=". $mdp;
             $contenuMail .= "&b=" . $pseudoDestinataire ."&c=" . $pseudo ."&d=0";
             $ok = Outils::envoyerMail($adrMailDestinaire, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
             if ( ! $ok ) {

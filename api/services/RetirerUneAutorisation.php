@@ -1,84 +1,100 @@
 <?php
+
+include_once ('C:\wamp64\www\ws-php-RD\TRACEGPS\modele\DAO.php');
+
 global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
+
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
 // Récupération des données transmises
-$pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
-$mdpSha1 = ( empty($this->request['mdpSha1'])) ? "" : $this->request['mdpSha1'];
-$pseudoARetirer = ( empty($this->request['pseudoARetirer'])) ? "" : $this->request['pseudoARetirer'];
-$texteMessage = ( empty($this->request['texteMessage'])) ? "" : $this->request['texteMessage'];
-$lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
+$pseudo = ( empty($_GET['pseudo'])) ? "" : $_GET['pseudo'];
+$mdp = ( empty($_GET['mdp'])) ? "" : $_GET['mdp'];
+$pseudoARetirer = ( empty($_GET['pseudoARetirer'])) ? "" : $_GET['pseudoARetirer'];
+$texteMessage = ( empty($_GET['texteMessage'])) ? "" : $_GET['texteMessage'];
+$lang = ( empty($_GET['lang'])) ? "" : $_GET['lang'];
+
+// "xml" par défaut si le paramètre lang est absent ou incorrect
+if ($lang != "json") $lang = "xml";
 
 // La méthode HTTP utilisée doit être GET
-if ($this->getMethodeRequete() != "GET")
-{   $msg = "Erreur : méthode HTTP incorrecte.";
+if ($_SERVER['REQUEST_METHOD'] != "GET")
+{	$message = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
 else {
-    // Les paramètres doivent être présents et corrects
-    if ( $mdpSha1 == "" || $pseudo == "" || $pseudoARetirer == "")
-    {   $message = "Erreur : données incomplètes ou incorrectes.";
+    // Les paramètres doivent être présents
+    if ($pseudo == "" || $mdp == "" || $pseudoARetirer == "") {
+        $message = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
+
     else
-    {   $niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdpSha1);
+    {	// test de l'authentification de l'utilisateur
+        // la méthode getNiveauConnexion de la classe DAO retourne les valeurs 0 (non identifié) ou 1 (utilisateur) ou 2 (administrateur)
+        $niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdp);
+
         if ( $niveauConnexion == 0 )
         {  $message = "Erreur : authentification incorrecte.";
             $code_reponse = 401;
         }
-        else{
+        elseif (!($dao->existePseudoUtilisateur($pseudoARetirer)))
+        {
+            $message = "Erreur : pseudo utilisateur inexistant.";
+            $code_reponse = 401;
+        }
+        else
+        {	$utilisateur = $dao->getUnUtilisateur($pseudo);
+            $utilisateurARetirer = $dao->getUnUtilisateur($pseudoARetirer);
+            $idAutorisant = $utilisateur->getId();
+            $idAutorise = $utilisateurARetirer->getId();
+            $adrMailDemandeur = $utilisateur->getAdrMail();
+            $adrMailDestinaire = $utilisateurARetirer->getAdrMail();
 
-            $unUtilisateur = $dao->getUnUtilisateur($pseudoARetirer);
-            if ($unUtilisateur == null)
-            {  $message = "Erreur : pseudo utilisateur inexistant.";
+            if (!($dao->autoriseAConsulter($idAutorisant, $idAutorise)))
+            {	$message = "Erreur : l'autorisation n'était pas accordée.";
                 $code_reponse = 400;
             }
-            else{
 
-                $utilisateurDemandeur = $dao->getUnUtilisateur($pseudo);
-                $utilisateurRetirer = $dao->getUnUtilisateur($pseudoARetirer);
-                $idDemandeur = $utilisateurDemandeur->getId();
-                $idRetirer = $utilisateurRetirer->getId();
-                if (!$dao->autoriseAconsulter($idDemandeur, $idRetirer)) {
-                    $message = "Erreur : l'autorisation n'était pas accordée.";
-                    $code_reponse = 600;
+            else {
+                // envoi d'un mail d'acceptation à l'intéressé
+                $utilisateurARetirer = $dao->getUnUtilisateur($pseudoARetirer);
+                $utilisateur = $dao->getUnUtilisateur($pseudo);
+                $idAutorisant = $utilisateur->getId();
+                $idARetirer = $utilisateurARetirer->getId();
+                $adrMailAutorise = $utilisateurARetirer->getAdrMail();
+
+                $dao->supprimerUneAutorisation($idAutorisant, $idAutorise);
+
+                if ($texteMessage != "") {
+                    // envoi d'un mail d'acceptation à l'intéressé
+                    $sujetMail = "Demande d'autorisation de la part d'un utilisateur du système TraceGPS";
+                    $contenuMail = "Cher ou chère " . $pseudoARetirer . "\n\n";
+                    $contenuMail .= "L'utilisateur" . $pseudo . " du systeme TraceGPS vous retire l'autorisation de suivre ses parcours.\n\n";
+                    $contenuMail .= "Son message  : " . $texteMessage . "\n\n";
+                    $contenuMail .= "Cordialement\n";
+                    $contenuMail .= "L'administrateur de TraceGPS";
+                    $ok = Outils::envoyerMail($adrMailDestinaire, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
+                    if (!$ok) {
+                        $message = "Erreur : autorisation supprimée ; l'envoi du courriel de notification a rencontré un problème";
+                        $code_reponse = 500;
+                    } else {
+                        $message = "Autorisation supprimée ; " . $pseudoARetirer . " va recevoir un courriel de notification.";
+                        $code_reponse = 200;
+                    }
                 }
-                else {
-                    if (!$dao->supprimerUneAutorisation($idDemandeur, $idRetirer)) {
-                        $message = "Erreur : problème lors de la suppression de l'autorisation.";
-                        $code_reponse = 700;
-                    }
-                    else {
-                        if ($texteMessage == "") {
-                            $message = "Autorisation supprimée.";
-                            $code_reponse = 800;
-                        }
-                        else {
-                            $adrMailDemandeur = $utilisateurRetirer->getAdrMail();
-                            $sujetMail = "Suppression d'autorisation de la part d'un utilisateur du système TraceGPS";
-                            $contenuMail = "Cher ou chère " . $pseudoARetirer . "\n\n";
-                            $contenuMail .= "L'utilisateur " . $pseudo . " du système TraceGPS vous retire l'autorisation de suivre ses parcours.\n\n";
-                            $contenuMail .= "Son message : " . $texteMessage . "\n\n";
-                            $contenuMail .= "Cordialement,\n L'administrateur du système TraceGPS";
-                            if(Outils::envoyerMail($adrMailDemandeur, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR)){
-                                $message = "Autorisation supprimée : "  . $pseudoARetirer . " va recevoir un courriel de notification.";
-                                $code_reponse = 801;
-                            }
-                            else {
-                                $message = "Erreur : autorisation supprimée ; l'envoi du courriel de notification a rencontré un problème.";
-                                $code_reponse = 900;
-                            }
-                        }
-                    }
+                else
+                {
+                    $message = "Autorisation supprimée ;";
+                    $code_reponse = 200;
                 }
             }
+
         }
     }
 }
-unset($dao);
+unset($dao);   // ferme la connexion à MySQL
 
-// création du flux en sortie
 if ($lang == "xml") {
     $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
     $donnees = creerFluxXML ($message);
@@ -89,7 +105,10 @@ else {
 }
 
 // envoi de la réponse HTTP
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
@@ -100,29 +119,36 @@ exit;
 function creerFluxXML($msg)
 {
     /* Exemple de code XML
-<?xml version="1.0" encoding="UTF-8"?>
-<!--Service web Connecter - BTS SIO - Lycée De La Salle - Rennes-->
-<data>
-<reponse>Erreur : données incomplètes.</reponse>
-</data>
+         <?xml version="1.0" encoding="UTF-8"?>
+         <!--Service web RetirerUneAutorisation - BTS SIO - Lycée De La Salle - Rennes-->
+         <data>
+            <reponse>Erreur : données incomplètes.</reponse>
+         </data>
      */
+
     // crée une instance de DOMdocument (DOM : Document Object Model)
     $doc = new DOMDocument();
+
     // specifie la version et le type d'encodage
     $doc->version = '1.0';
     $doc->encoding = 'UTF-8';
+
     // crée un commentaire et l'encode en UTF-8
     $elt_commentaire = $doc->createComment('Service web RetirerUneAutorisation - BTS SIO - Lycée De La Salle - Rennes');
     // place ce commentaire à la racine du document XML
     $doc->appendChild($elt_commentaire);
+
     // crée l'élément 'data' à la racine du document XML
     $elt_data = $doc->createElement('data');
     $doc->appendChild($elt_data);
+
     // place l'élément 'reponse' juste après l'élément 'data'
     $elt_reponse = $doc->createElement('reponse', $msg);
     $elt_data->appendChild($elt_reponse);
+
     // Mise en forme finale
     $doc->formatOutput = true;
+
     // renvoie le contenu XML
     return $doc->saveXML();
 }
@@ -139,14 +165,19 @@ function creerFluxJSON($msg)
              }
          }
      */
+
     // 2 notations possibles pour créer des tableaux associatifs (la deuxième est en commentaire)
+
     // construction de l'élément "data"
     $elt_data = ["reponse" => $msg];
 //     $elt_data = array("reponse" => $msg);
+
     // construction de la racine
     $elt_racine = ["data" => $elt_data];
 //     $elt_racine = array("data" => $elt_data);
+
     // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
     return json_encode($elt_racine, JSON_PRETTY_PRINT);
 }
+
 ?>

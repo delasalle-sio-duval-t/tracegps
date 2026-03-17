@@ -1,13 +1,31 @@
 <?php
+// Projet TraceGPS - services web
+// fichier : api/services/GetTousLesUtilisateurs.php
+// Dernière mise à jour : 16/10/2021 par tD
+
+//Rôle : ce service web permet à un utilisateur d'obtenir la liste des utilisateurs qu'il autorise à consulter
+//ses parcours.
+//Paramètres à fournir :
+//• pseudo : le pseudo de l'utilisateur
+//• mdp : le mot de passe de l'utilisateur hashé en sha1
+//• lang : le langage utilisé pour le flux de données ("xml" ou "json")
+//Description du traitement :
+//• Vérifier que les données transmises sont complètes
+//• Vérifier l'authentification de l'utilisateur
+//• Fournir la liste des utilisateurs qu'il autorise à consulter ses parcours
+
+// Les paramètres doivent être passés par la méthode GET :
+//     http://<hébergeur>/tracegps/api/GetTousLesUtilisateurs?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
+
+include_once ('C:\wamp64\www\ws-php-td\modele\DAO.php');
+
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
-// Les paramètres doivent être passés par la méthode GET :
-// http://<hébergeur>/tracegps/api/GetLesUtilisateursQuiMautorisent?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
 
 // Récupération des données transmises
-$pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
-$mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
-$lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
+$pseudo = ( empty($_GET['pseudo'])) ? "" : $_GET['pseudo'];
+$mdpSha1 = ( empty($_GET['mdp'])) ? "" : $_GET['mdp'];
+$lang = ( empty($_GET['lang'])) ? "" : $_GET['lang'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
@@ -17,7 +35,7 @@ $nbReponses = 0;
 $lesUtilisateurs = array();
 
 // La méthode HTTP utilisée doit être GET
-if ($this->getMethodeRequete() != "GET")
+if ($_SERVER['REQUEST_METHOD'] != "GET")
 {   $msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
@@ -28,36 +46,29 @@ else {
         $code_reponse = 400;
     }
     else
-    {   // Vérifie l'authentification
-        $niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdpSha1);
-        if ($niveauConnexion == 0) {
-            $msg = "Erreur : authentification incorrecte.";
-            $code_reponse = 401;
+    {   if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
+        $msg = "Erreur : authentification incorrecte.";
+        $code_reponse = 401;
+    }
+    else {
+        // Récupération de la liste des utilisateurs autorisés
+        $Utilisateur = $dao->getUnUtilisateur($pseudo);
+        $lesUtilisateurs = $dao->getLesUtilisateursAutorisant($Utilisateur->getId()); //fonction du DAO
+
+        // Comptage
+        $nbReponses = sizeof($lesUtilisateurs);
+
+        if ($nbReponses == 0) {
+            $msg = "Aucun utilisateur autorisé.";
+            $code_reponse = 200;
         }
-        else
-        {
-            // Récupération de l'objet utilisateur connecté
-            $utilisateur = $dao->getUnUtilisateur($pseudo);
-            $idUtilisateur = $utilisateur->getId();
-
-            // Récupération de la liste des utilisateurs autorisés
-            $lesUtilisateurs = $dao->getLesUtilisateursAutorisant($idUtilisateur);
-
-            // Mémorisation du nombre d'utilisateurs
-            $nbReponses = sizeof($lesUtilisateurs);
-
-            if ($nbReponses == 0) {
-                $msg = "Aucun utilisateur accordée à " . $pseudo . ".";
-                $code_reponse = 200;
-            }
-            else {
-                $msg = $nbReponses . " autorisation(s) accordée(s) à " . $pseudo .".";
-                $code_reponse = 200;
-            }
+        else {
+            $msg = $nbReponses . " utilisateur(s) autorisé(s).";
+            $code_reponse = 200;
         }
     }
+    }
 }
-
 // ferme la connexion à MySQL :
 unset($dao);
 
@@ -72,7 +83,9 @@ else {
 }
 
 // envoi de la réponse HTTP
-$this->envoyerReponse($code_reponse, $content_type, $donnees);
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
@@ -257,4 +270,7 @@ function creerFluxJSON($msg, $lesUtilisateurs)
     // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
     return json_encode($elt_racine, JSON_PRETTY_PRINT);
 }
+
+// ================================================================================================
 ?>
+
