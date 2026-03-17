@@ -18,7 +18,7 @@
 // ces variables globales sont définies dans le fichier modele/parametres.php
 global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
 
-include_once ('C:\wamp64\www\ws-php-td\modele\DAO.php');
+include_once ('Insérez chemin DAO.php ici');
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();

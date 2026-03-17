@@ -46,17 +46,17 @@ else {
     }
     else
     {	$niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdpSha1);
-    
+
         switch ($niveauConnexion)
         {   case 0 :
             $msg = "Erreur : authentification incorrecte.";
             $code_reponse = 401; break;
-        case 1 :
-            $msg = "Utilisateur authentifié.";
-            $code_reponse = 200; break;
-        case 2 :
-            $msg = "Administrateur authentifié.";
-            $code_reponse = 200; break;
+            case 1 :
+                $msg = "Utilisateur authentifié.";
+                $code_reponse = 200; break;
+            case 2 :
+                $msg = "Administrateur authentifié.";
+                $code_reponse = 200; break;
         }
     }
 }
@@ -83,7 +83,7 @@ exit;
 
 // création du flux XML en sortie
 function creerFluxXML($msg)
-{	
+{
     /* Exemple de code XML
          <?xml version="1.0" encoding="UTF-8"?>
          <!--Service web Connecter - BTS SIO - Lycée De La Salle - Rennes-->
@@ -91,32 +91,32 @@ function creerFluxXML($msg)
             <reponse>Erreur : données incomplètes.</reponse>
          </data>
      */
-    
+
     // crée une instance de DOMdocument (DOM : Document Object Model)
-	$doc = new DOMDocument();
-	
-	// specifie la version et le type d'encodage
-	$doc->version = '1.0';
-	$doc->encoding = 'UTF-8';
-	
-	// crée un commentaire et l'encode en UTF-8
-	$elt_commentaire = $doc->createComment('Service web Connecter - BTS SIO - Lycée De La Salle - Rennes');
-	// place ce commentaire à la racine du document XML
-	$doc->appendChild($elt_commentaire);
-	
-	// crée l'élément 'data' à la racine du document XML
-	$elt_data = $doc->createElement('data');
-	$doc->appendChild($elt_data);
-	
-	// place l'élément 'reponse' juste après l'élément 'data'
-	$elt_reponse = $doc->createElement('reponse', $msg);
-	$elt_data->appendChild($elt_reponse);
-	
-	// Mise en forme finale
-	$doc->formatOutput = true;
-	
-	// renvoie le contenu XML
-	return $doc->saveXML();
+    $doc = new DOMDocument();
+
+    // specifie la version et le type d'encodage
+    $doc->version = '1.0';
+    $doc->encoding = 'UTF-8';
+
+    // crée un commentaire et l'encode en UTF-8
+    $elt_commentaire = $doc->createComment('Service web Connecter - BTS SIO - Lycée De La Salle - Rennes');
+    // place ce commentaire à la racine du document XML
+    $doc->appendChild($elt_commentaire);
+
+    // crée l'élément 'data' à la racine du document XML
+    $elt_data = $doc->createElement('data');
+    $doc->appendChild($elt_data);
+
+    // place l'élément 'reponse' juste après l'élément 'data'
+    $elt_reponse = $doc->createElement('reponse', $msg);
+    $elt_data->appendChild($elt_reponse);
+
+    // Mise en forme finale
+    $doc->formatOutput = true;
+
+    // renvoie le contenu XML
+    return $doc->saveXML();
 }
 
 // ================================================================================================
@@ -131,17 +131,17 @@ function creerFluxJSON($msg)
              }
          }
      */
-    
+
     // 2 notations possibles pour créer des tableaux associatifs (la deuxième est en commentaire)
-    
+
     // construction de l'élément "data"
     $elt_data = ["reponse" => $msg];
 //     $elt_data = array("reponse" => $msg);
-    
+
     // construction de la racine
     $elt_racine = ["data" => $elt_data];
 //     $elt_racine = array("data" => $elt_data);
-    
+
     // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
     return json_encode($elt_racine, JSON_PRETTY_PRINT);
 }

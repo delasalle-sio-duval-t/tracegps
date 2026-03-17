@@ -10,16 +10,18 @@
 //     idTrace : l'id de la trace à supprimer
 //     lang : le langage utilisé pour le flux de données ("xml" ou "json")
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
-include_once ('C:\wamp64\www\ws-php-td\modele\DAO.php');
+
+include_once ('C:\wamp64\www\ws-php-lb\TraceGPS\modele\DAO.php');
+
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
 // Récupération des données transmises
-$pseudo = ( empty($_GET['pseudo'])) ? "" : $_GET['pseudo'];
-$mdpSha1 = ( empty($_GET['mdp'])) ? "" : $_GET['mdp'];
-$idTrace = ( empty($_GET['idTrace'])) ? "" : $_GET['idTrace'];
-$lang = ( empty($_GET['lang'])) ? "" : $_GET['lang'];
+$pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
+$mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
+$idTrace = ( empty($this->request['idTrace'])) ? "" : $this->request['idTrace'];
+$lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
@@ -82,6 +84,10 @@ else {
     $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
     $donnees = creerFluxJSON($msg);
 }
+
+
+// envoi de la réponse HTTP
+$this->envoyerReponse($code_reponse, $content_type, $donnees);
 
 // envoi de la réponse HTTP
 http_response_code($code_reponse);
