@@ -7,6 +7,7 @@
 // Le service web doit recevoir 3 paramètres :
 //      pseudo : le pseudo de l'utilisateur
 //      mdp : le mot de passe de l'utilisateur hashé en sha1
+//      idTrace : l'id de la trace dont l'enregistrement du parcours à démarrer
 //      lang : le langage utilisé pour le flux de données ("xml" ou "json")
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
 
