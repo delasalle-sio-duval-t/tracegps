@@ -45,11 +45,11 @@ else {
                 $code_reponse = 404;
             }
             else {
-                if ($dao->supprimerUneTrace($idTrace) == null) {
-                    $msg = "Erreur : problème lors de la suppression de l'utilisateur.";
+                if ($dao->demarrerEnregistrementParcours($uneTrace) == null) {
+                    $msg = "Erreur : problème lors du démarrage de l'enregistrement du parcours.";
                     $code_reponse = 500;
                 } else {
-                    $msg = "Parcours supprimé.";
+                    $msg = "Enregistrement du parcours démarré.";
                     $code_reponse = 200;
 
                 }
