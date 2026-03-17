@@ -821,6 +821,45 @@ class DAO
 
     }
 
+    public function demarrerEnregistrementParcours(Trace $uneTrace) {
+        $txt_req = "SELECT COUNT(*) FROM tracegps_traces 
+                      WHERE idUtilisateur = :idUtilisateur AND terminee = 0";
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("idUtilisateur", mb_convert_encoding($uneTrace->getIdUtilisateur(), 'ISO-8859-1', 'UTF-8'), PDO::PARAM_INT);
+        $req->execute();
+        $nbOuvertes = $req->fetchColumn(0);
+        $req->closeCursor();
+
+        if ($nbOuvertes > 0) {
+            return false;
+        }
+
+        $dateDebut = $uneTrace->getDateHeureDebut();
+        if ($dateDebut == null || $dateDebut == "") {
+            $dateDebut = date('Y-m-d H:i:s');
+        }
+
+        $txt_req = "INSERT INTO tracegps_traces (dateDebut, dateFin, terminee, idUtilisateur)
+                VALUES (:dateDebut, NULL, 0, :idUtilisateur)";
+        $req = $this->cnx->prepare($txt_req);
+        $req->bindValue("dateDebut", mb_convert_encoding($dateDebut, 'ISO-8859-1', 'UTF-8'), PDO::PARAM_STR);
+        $req->bindValue("idUtilisateur", mb_convert_encoding($uneTrace->getIdUtilisateur(), 'ISO-8859-1', 'UTF-8'), PDO::PARAM_INT);
+
+        $ok = $req->execute();
+        if (!$ok) {
+            $req->closeCursor();
+            return false;
+        }
+
+        $nouvelId = $this->cnx->lastInsertId();
+        $uneTrace->setId($nouvelId);
+
+        $req->closeCursor();
+        return true;
+    }
+
+
+
 
 
     
