@@ -4,7 +4,7 @@
 // dernière modification : 16/10/2025 par kG
 
 include_once ('C:\wamp64\www\ws-php-lb\TraceGPS\modele\PointDeTrace.php');
-include_once ('C:\wamp64\www\ws-php-lb\TraceGPS\modele\DAO.php');
+include_once('C:\wamp64\www\ws-php-lb\TraceGPS\modele\DAO.php');
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 

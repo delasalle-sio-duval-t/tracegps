@@ -1,26 +1,14 @@
 <?php
 // Projet TraceGPS - services web
-// fichier : api/services/Connecter.php
-// Dernière mise à jour : 3/7/2021 par dP
+// fichier : api/services/DemarrerEnregistrementParcours
+// Dernière mise à jour : 16/10/2025 par lB
 
-// Rôle : ce service permet à un utilisateur de s'authentifier
+// Rôle : ce service web permet à un utilisateur de démarrer l'enregistrement d'un parcours.
 // Le service web doit recevoir 3 paramètres :
-//     pseudo : le pseudo de l'utilisateur
-//     mdp : le mot de passe hashé en sha1
-//     lang : le langage du flux de données retourné ("xml" ou "json") ; "xml" par défaut si le paramètre est absent ou incorrect
+//      pseudo : le pseudo de l'utilisateur
+//      mdp : le mot de passe de l'utilisateur hashé en sha1
+//      lang : le langage utilisé pour le flux de données ("xml" ou "json")
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
-
-// Les paramètres doivent être passés par la méthode GET :
-//     http://<hébergeur>/tracegps/api/Connecter?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
-
-// Pour tester le service avec CURL :
-// curl -i -X GET "http://localhost/ws-php-dp/tracegps/api/Connecter?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=json"
-// curl -i -X GET "http://localhost/ws-php-dp/tracegps/api/Connecter?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml"
-// curl -i -X POST "http://localhost/ws-php-dp/tracegps/api/Connecter?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=json"
-
-// curl -i -X GET "http://sio.lyceedelasalle.fr/tracegps/api/Connecter?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=json"
-// curl -i -X GET "http://sio.lyceedelasalle.fr/tracegps/api/Connecterr?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=json"
-// curl -i -X GET "http://sio.lyceedelasalle.fr/tracegps/api/connecter?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=json"
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -28,6 +16,7 @@ $dao = new DAO();
 // Récupération des données transmises
 $pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
 $mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
+$laTrace = ( empty($this->request['laTrace'])) ? "" : $this->request['laTrace'];
 $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
@@ -40,61 +29,61 @@ if ($this->getMethodeRequete() != "GET")
 }
 else {
     // Les paramètres doivent être présents
-    if ( $pseudo == "" || $mdpSha1 == "" )
-    {	$msg = "Erreur : données incomplètes.";
+    if ($pseudo == "" || $mdpSha1 == "" || $laTrace == "") {
+        $msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
     else {
-        if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
-            $msg = "Erreur : authentification incorrecte.";
+        if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 )
+        {   $msg = "Erreur : authentification incorrecte.";
             $code_reponse = 401;
         }
         else {
-            $date = date('y-m-d h:i:s');
-            $utilisateur = $dao->getUnUtilisateur($pseudo);
-            $id = $utilisateur->getId();
-            $uneTrace = new Trace( 0,
-                $date, null, false,$id
-            );
-            $dao->creerUneTrace($uneTrace) ;
-            $msg = "Trace créée.";
-            $code_reponse = 200;
+            $uneTrace = $dao->getUneTrace($laTrace);
+            if ($uneTrace == null) {
+                $msg = "Erreur : parcours inexistant.";
+                $code_reponse = 404;
+            }
+            else {
+                if ($dao->)
+                else {
+                    if ($dao->supprimerUneTrace($idTrace) == null) {
+                        $msg = "Erreur : problème lors de la suppression de l'utilisateur.";
+                        $code_reponse = 500;
+                    } else {
+                        $msg = "Parcours supprimé.";
+                        $code_reponse = 200;
+
+                    }
+                }
         }
     }
 }
+
 // ferme la connexion à MySQL :
 unset($dao);
 
 // création du flux en sortie
 if ($lang == "xml") {
     $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
-    $donnees = creerFluxXML ($msg);
+    $donnees = creerFluxXML($msg);
 }
 else {
     $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
-    $donnees = creerFluxJSON ($msg);
+    $donnees = creerFluxJSON($msg);
 }
-
 // envoi de la réponse HTTP
 $this->envoyerReponse($code_reponse, $content_type, $donnees);
-
+// envoi de la réponse HTTP
+http_response_code($code_reponse);
+header("Content-Type: " . $content_type);
+echo $donnees;
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
 
-// ================================================================================================
-
 // création du flux XML en sortie
 function creerFluxXML($msg)
-{
-    /* Exemple de code XML
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!--Service web ChangerDeMdp - BTS SIO - Lycée De La Salle - Rennes-->
-        <data>
-            <reponse>Erreur : authentification incorrecte.</reponse>
-        </data>
-     */
-
-    // crée une instance de DOMdocument (DOM : Document Object Model)
+{	// crée une instance de DOMdocument (DOM : Document Object Model)
     $doc = new DOMDocument();
 
     // specifie la version et le type d'encodage
@@ -102,7 +91,7 @@ function creerFluxXML($msg)
     $doc->encoding = 'UTF-8';
 
     // crée un commentaire et l'encode en UTF-8
-    $elt_commentaire = $doc->createComment('Service web ChangerDeMdp - BTS SIO - Lycée De La Salle - Rennes');
+    $elt_commentaire = $doc->createComment('Service web DemarrerEnregistrementParcours - BTS SIO - Lycée De La Salle - Rennes');
     // place ce commentaire à la racine du document XML
     $doc->appendChild($elt_commentaire);
 
@@ -110,7 +99,7 @@ function creerFluxXML($msg)
     $elt_data = $doc->createElement('data');
     $doc->appendChild($elt_data);
 
-    // place l'élément 'reponse' juste après l'élément 'data'
+    // place l'élément 'reponse' dans l'élément 'data'
     $elt_reponse = $doc->createElement('reponse', $msg);
     $elt_data->appendChild($elt_reponse);
 
@@ -121,16 +110,14 @@ function creerFluxXML($msg)
     return $doc->saveXML();
 }
 
-// ================================================================================================
-
 // création du flux JSON en sortie
 function creerFluxJSON($msg)
 {
     /* Exemple de code JSON
          {
-             "data": {
+            "data": {
                 "reponse": "Erreur : authentification incorrecte."
-             }
+            }
          }
      */
 

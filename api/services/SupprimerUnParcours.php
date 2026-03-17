@@ -11,9 +11,6 @@
 //     lang : le langage utilisé pour le flux de données ("xml" ou "json")
 // Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
 
-include_once ('C:\wamp64\www\ws-php-lb\TraceGPS\modele\DAO.php');
-
-
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
@@ -27,13 +24,13 @@ $lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 if ($lang != "json") $lang = "xml";
 
 // La méthode HTTP utilisée doit être GET
-if ($_SERVER['REQUEST_METHOD'] != "GET")
+if ($this->getMethodeRequete() != "GET")
 {	$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
 else {
     // Les paramètres doivent être présents
-    if ( $pseudo == "" || $mdpSha1 == "" || $idTrace== "" )
+    if ( $pseudo == "" || $mdpSha1 == "" || $idTrace == "")
     {	$msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
@@ -48,24 +45,26 @@ else {
             $uneTrace = $dao->getUneTrace($idTrace);
             if ($uneTrace == null) {
                 $msg = "Erreur : parcours inexistant.";
-                $code_reponse = 400;
+                $code_reponse = 404;
             } else {
-                // il faut être propriétaire pour supprimer un parcours
-                $unUtilisateur  = $dao->getUnUtilisateur($pseudo);
-                if ($dao->getUneTrace($idTrace)->getIdUtilisateur() != $unUtilisateur->getId()) {
+                $laTrace = $dao->getUneTrace($idTrace);
+                $idUtilisateurTrace = $laTrace->getIdUtilisateur();
+                $idUtilisateur = $dao->getUnUtilisateur($pseudo)->getId();
+                if ($idUtilisateurTrace !=$idUtilisateur){
                     $msg = "Erreur : vous n'êtes pas le propriétaire de ce parcours.";
                     $code_reponse = 401;
-                } else {
-                    // suppression du parcours dans la BDD
-                    $ok = $dao->supprimerUneTrace($idTrace);
-                    if (!$ok) {
-                        $msg = "Erreur : problème lors de la suppression du parcours.";
+                }
+                else {
+                    if ($dao->supprimerUneTrace($idTrace) == null) {
+                        $msg = "Erreur : problème lors de la suppression de l'utilisateur.";
                         $code_reponse = 500;
                     } else {
-                        $msg = "Parcours supprimé";
+                        $msg = "Parcours supprimé.";
                         $code_reponse = 200;
+
                     }
                 }
+
             }
         }
     }
@@ -84,7 +83,6 @@ else {
     $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
     $donnees = creerFluxJSON($msg);
 }
-
 
 // envoi de la réponse HTTP
 $this->envoyerReponse($code_reponse, $content_type, $donnees);
