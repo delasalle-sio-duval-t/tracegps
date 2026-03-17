@@ -45,17 +45,15 @@ else {
                 $code_reponse = 404;
             }
             else {
-                if ($dao->)
-                else {
-                    if ($dao->supprimerUneTrace($idTrace) == null) {
-                        $msg = "Erreur : problème lors de la suppression de l'utilisateur.";
-                        $code_reponse = 500;
-                    } else {
-                        $msg = "Parcours supprimé.";
-                        $code_reponse = 200;
+                if ($dao->supprimerUneTrace($idTrace) == null) {
+                    $msg = "Erreur : problème lors de la suppression de l'utilisateur.";
+                    $code_reponse = 500;
+                } else {
+                    $msg = "Parcours supprimé.";
+                    $code_reponse = 200;
 
-                    }
                 }
+            }
         }
     }
 }
