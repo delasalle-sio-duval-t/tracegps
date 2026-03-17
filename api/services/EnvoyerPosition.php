@@ -1,99 +1,102 @@
 <?php
-// projet TraceGps - web
-// fichier :  api/services/EnvoyerPosition.php
-// dernière modification : 16/10/2025 par kG
-
-include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\PointDeTrace.php');
-include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\DAO.php');
+global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
 // Récupération des données transmises
-$pseudo = ( empty($_GET['pseudo'])) ? "" : $_GET['pseudo'];
-$mdpSha1 = ( empty($_GET['mdp'])) ? "" : $_GET['mdp'];
-$idTrace = ( empty($_GET['idTrace'])) ? "" : $_GET['idTrace'];
-$dateHeure = ( empty($_GET['dateHeure'])) ? "" : $_GET['dateHeure'];
-$latitude = ( empty($_GET['latitude'])) ? "" : $_GET['latitude'];
-$longitude = ( empty($_GET['longitude'])) ? "" : $_GET['longitude'];
-$altitude = ( empty($_GET['altitude'])) ? "" : $_GET['altitude'];
-$rythmeCardio = ( empty($_GET['rythmeCardio'])) ? "" : $_GET['rythmeCardio'];
-$lang = ( empty($_GET['lang'])) ? "" : $_GET['lang'];
+$pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
+$mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
+$idTrace = ( empty($this->request['idTrace'])) ? "" : $this->request['idTrace'];
+$dateHeure = ( empty($this->request['dateHeure'])) ? "" : $this->request['dateHeure'];
+$latitude = ( empty($this->request['latitude'])) ? "" : $this->request['latitude'];
+$longitude = ( empty($this->request['longitude'])) ? "" : $this->request['longitude'];
+$altitude = ( empty($this->request['altitude'])) ? "" : $this->request['altitude'];
+$rythmeCardio = ( empty($this->request['rythmeCardio'])) ? "" : $this->request['rythmeCardio'];
+$lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
-
-// "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
 
-if ($_SERVER['REQUEST_METHOD'] != "GET")
+
+// La méthode HTTP utilisée doit être GET
+if ($this->getMethodeRequete() != "GET")
 {   $msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
-else {// Les paramètres doivent être présents
-    if ( $pseudo == "" || $mdpSha1 == "" || $idTrace == "" || $dateHeure =="" || $latitude == "" || $longitude == "" || $altitude == "" || $rythmeCardio == "") {
-        $msg = "Erreur : données incomplètes.";
+else {
+    // Les paramètres doivent être présents et corrects
+    if ( $mdpSha1 == "" || $pseudo == "" || $idTrace == "")
+    {   $message = "Erreur : données incomplètes ou incorrectes.";
         $code_reponse = 400;
     }
-    else {
-
-        $reponse = $dao->getNiveauConnexion($pseudo, $mdpSha1);
-
-        if (empty($reponse)|| $reponse == 0) {
-            $msg = " Erreur : authentification incorrecte.";
-            $code_reponse = 203;
+    else
+    {   $niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdpSha1);
+        if ( $niveauConnexion == 0 )
+        {
+            $message = "Erreur : authentification incorrecte.";
+            $code_reponse = 401;
         }
-
-        else {
+        else{
             $uneTrace = $dao->getUneTrace($idTrace);
-
-            if (is_null($uneTrace)) {
-                $msg = " Erreur : le numéro de trace n'existe pas.";
-                $code_reponse = 404;
+            if (is_null($uneTrace))
+            {
+                $message = "Erreur : le numéro de trace n'existe pas.";
+                $code_reponse = 500;
             }
-
             else {
-                $idUtilisateur = $uneTrace->getIdUtilisateur();
-                $unUtilisateur = $dao->getUnUtilisateur($pseudo);
-
-                if ($idUtilisateur != $unUtilisateur->getId()) {
-                    $msg = " Erreur : le numéro de la trace ne correspond pas à cet utilisateur.";
-                    $code_reponse = 409;
+                $utilisateur = $dao->getUnUtilisateur($pseudo);
+                $idUtilisateur = $utilisateur->getId();
+                $idProprietaire = $uneTrace->getIdUtilisateur();
+                if ($idUtilisateur != $idProprietaire) {
+                    $message = "Erreur : le numéro de trace ne correspond pas à cet utilisateur.";
+                    $code_reponse = 501;
                 }
-
                 else {
-                    $uneTraceTerminee = $uneTrace->getTerminee();
-
-                    if ($uneTraceTerminee == 1) {
-                        $msg = " Erreur : la trace est déjà terminée.";
-                        $code_reponse = 409;
+                    $terminee = $uneTrace->getTerminee();
+                    if ($terminee == true) {
+                        $message = "Erreur : la trace est déjà terminée.";
+                        $code_reponse = 600;
                     }
+                    else
+                    {
+                        // Calculer le numéro du point
+                        $lesPoints = $dao->getLesPointsDeTrace($idTrace);
+                        $numPoint = count($lesPoints) + 1;
 
-                    else {
+                        $nouveauPoint = new PointDeTrace($idTrace, $numPoint, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio, 0, 0, 0);
 
-                        $point = new PointDeTrace($idTrace,sizeof($dao->getLesPointsDeTrace($idTrace))+1, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio,0,0,0);
-                        $dao->creerUnPointDeTrace($point);
-                        $msg = "Point créé";
-                        $code_reponse = 201;
+                        // Enregistrer le point dans la base de données
+                        $ok = $dao->creerUnPointDeTrace($nouveauPoint);
+
+                        if ($ok == false)
+                        {
+                            $message = "Erreur : problème lors de l'enregistrement du point.";
+                            $code_reponse = 700;
+                        }
+                        else
+                        {
+                            $message = "Point créé.";
+                            $code_reponse = 200;
+                        }
                     }
                 }
             }
         }
     }
 }
+unset($dao);
 
 // création du flux en sortie
 if ($lang == "xml") {
     $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
-    $donnees = creerFluxXML ($msg);
+    $donnees = creerFluxXML ($message);
 }
 else {
     $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
-    $donnees = creerFluxJSON ($msg);
+    $donnees = creerFluxJSON ($message);
 }
 
 // envoi de la réponse HTTP
-
-http_response_code($code_reponse);
-header("Content-Type: " . $content_type);
-echo $donnees;
+$this->envoyerReponse($code_reponse, $content_type, $donnees);
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
@@ -119,7 +122,7 @@ function creerFluxXML($msg)
     $doc->encoding = 'UTF-8';
 
     // crée un commentaire et l'encode en UTF-8
-    $elt_commentaire = $doc->createComment('Service web Connecter - BTS SIO - Lycée De La Salle - Rennes');
+    $elt_commentaire = $doc->createComment('Service web RetirerUneAutorisation - BTS SIO - Lycée De La Salle - Rennes');
     // place ce commentaire à la racine du document XML
     $doc->appendChild($elt_commentaire);
 
@@ -163,8 +166,5 @@ function creerFluxJSON($msg)
 
     // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
     return json_encode($elt_racine, JSON_PRETTY_PRINT);
-
 }
-
-// ================================================================================================
 ?>
