@@ -14,7 +14,7 @@
 // Les paramètres doivent être passés par la méthode GET :
 //     http://<hébergeur>/tracegps/api/CreerUnUtilisateur?pseudo=turlututu&adrMail=delasalle.sio.eleves@gmail.com&numTel=1122334455&lang=xml
 
-include_once ('Inserer chemin DAO.php ici');
+include_once ('C:\wamp64\www\ws-php-kg\TraceGPS\modele\DAO.php');
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
