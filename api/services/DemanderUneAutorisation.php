@@ -1,101 +1,112 @@
 <?php
+// Projet TraceGPS - services web
+// fichier : api/services/DemanderUneAutorisation.php
+// Dernière mise à jour : 3/7/2019 par dP
 
-include_once ('C:\wamp64\www\ws-php-RD\TRACEGPS\modele\DAO.php');
+// Rôle : ce service permet à un utilisateur de demander une autorisation à un autre utilisateur
+// Le service web doit recevoir 6 paramètres :
+//     pseudo : le pseudo de l'utilisateur qui demande l'autorisation
+//     mdp : le mot de passe hashé en sha1 de l'utilisateur qui demande l'autorisation
+//     pseudoDestinataire : le pseudo de l'utilisateur à qui on demande l'autorisation
+//     texteMessage : le texte d'un message accompagnant la demande
+//     nomPrenom : le nom et le prénom du demandeur
+//     lang : le langage du flux de données retourné ("xml" ou "json") ; "xml" par défaut si le paramètre est absent ou incorrect
+// Le service retourne un flux de données XML ou JSON contenant un compte-rendu d'exécution
 
+// Les paramètres doivent être passés par la méthode GET :
+//     http://<hébergeur>/tracegps/api/DemanderUneAutorisation?pseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&pseudoDestinataire=oxygen&texteMessage=coucou&nomPrenom=charles-edouard&lang=xml
+
+// ces variables globales sont définies dans le fichier modele/parametres.php
 global $ADR_MAIL_EMETTEUR, $ADR_SERVICE_WEB;
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
 // Récupération des données transmises
-$pseudo = ( empty($_GET['pseudo'])) ? "" : $_GET['pseudo'];
-$mdp = ( empty($_GET['mdp'])) ? "" : $_GET['mdp'];
-$pseudoDestinataire = ( empty($_GET['pseudoDestinataire'])) ? "" : $_GET['pseudoDestinataire'];
-$texteMessage = ( empty($_GET['texteMessage'])) ? "" : $_GET['texteMessage'];
-$nomPrenom = ( empty($_GET['nomPrenom'])) ? "" : $_GET['nomPrenom'];
-$lang = ( empty($_GET['lang'])) ? "" : $_GET['lang'];
+$pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
+$mdpSha1 = ( empty($this->request['mdp'])) ? "" : $this->request['mdp'];
+$pseudoDestinataire = ( empty($this->request['pseudoDestinataire'])) ? "" : $this->request['pseudoDestinataire'];
+$texteMessage = ( empty($this->request['texteMessage'])) ? "" : $this->request['texteMessage'];
+$nomPrenom = ( empty($this->request['nomPrenom'])) ? "" : $this->request['nomPrenom'];
+$lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
 
 // La méthode HTTP utilisée doit être GET
-if ($_SERVER['REQUEST_METHOD'] != "GET")
-{	$message = "Erreur : méthode HTTP incorrecte.";
+if ($this->getMethodeRequete() != "GET")
+{$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
 else {
     // Les paramètres doivent être présents
-    if ($pseudo == "" || $mdp == "" || $pseudoDestinataire == "" || $texteMessage == "" || $nomPrenom == "" ) {
-        $message = "Erreur : données incomplètes.";
+    if ( $pseudo == "" || $mdpSha1 == "" || $pseudoDestinataire == "" || $texteMessage == "" || $nomPrenom == "" )
+    {$msg = "Erreur : données incomplètes.";
         $code_reponse = 400;
     }
-
     else
-    {	// test de l'authentification de l'utilisateur
-        // la méthode getNiveauConnexion de la classe DAO retourne les valeurs 0 (non identifié) ou 1 (utilisateur) ou 2 (administrateur)
-        $niveauConnexion = $dao->getNiveauConnexion($pseudo, $mdp);
-
-        if ( $niveauConnexion == 0 )
-        {  $message = "Erreur : authentification incorrecte.";
-            $code_reponse = 401;
-        }
-        elseif (!($dao->existePseudoUtilisateur($pseudoDestinataire)))
-        {
-            $message = "Erreur : pseudo utilisateur inexistant.";
-            $code_reponse = 401;
+    {if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 )
+    {   $msg = "Erreur : authentification incorrecte.";
+        $code_reponse = 401;
+    }
+    else
+    {// contrôle d'existence de $pseudoDestinataire
+        $utilisateurDestinataire = $dao->getUnUtilisateur($pseudoDestinataire);
+        if ($utilisateurDestinataire == null)
+        {   $msg = "Erreur : pseudo utilisateur inexistant.";
+            $code_reponse = 400;
         }
         else
-        {	$utilisateurDemandeur = $dao->getUnUtilisateur($pseudo);
-            $utilisateurDestinataire = $dao->getUnUtilisateur($pseudoDestinataire);
-            $adrMailDemandeur = $utilisateurDemandeur->getAdrMail();
-            $adrMailDestinaire = $utilisateurDestinataire->getAdrMail();
-            $numTelDemandeur = $utilisateurDemandeur->getNumTel();
-
-            // envoi d'un mail d'acceptation à l'intéressé
-            $sujetMail = "Demande d'autorisation de la part d'un utilisateur du système TraceGPS";
+        {   $utilisateurDemandeur = $dao->getUnUtilisateur($pseudo);
+            // envoi d'un mail de confirmation de l'enregistrement
+            $adrMail = $utilisateurDestinataire->getAdrMail();
+            $sujetMail = 'Demande d\'autorisation de la part d\'un utilisateur du système TraceGPS';
             $contenuMail = "Cher ou chère " . $pseudoDestinataire . "\n\n";
-            $contenuMail .= "Un utilisateur système TraceGPS vous demande l'autorisation de suivre votre parcours.\n\n";
+            $contenuMail .= "Un utilisateur du système TraceGPS vous demande l'autorisation de suivre vos parcours.\n\n";
             $contenuMail .= "Voici les données le concernant :\n\n";
-            $contenuMail .= "Son pseudo : ". $pseudo . "\n";
-            $contenuMail .= "Son adresse mail : ". $adrMailDemandeur . "\n";
-            $contenuMail .= "Son numéro de téléphone : ". $numTelDemandeur . "\n";
-            $contenuMail .= "Son nom et prénom : ". $nomPrenom . "\n";
-            $contenuMail .= "Son message : ". $texteMessage . "\n\n";
+            $contenuMail .= "Son pseudo : " . $utilisateurDemandeur->getPseudo() . "\n";
+            $contenuMail .= "Son adresse mail : " . $utilisateurDemandeur->getAdrMail() . "\n";
+            $contenuMail .= "Son numéro de téléphone : " . $utilisateurDemandeur->getNumTel() . "\n";
+            $contenuMail .= "Son nom et prénom : " . $nomPrenom . "\n";
+            $contenuMail .= "Son message : " . $texteMessage . "\n\n";
+
             $contenuMail .= "Pour accepter la demande, cliquez sur ce lien :\n";
-            $contenuMail .= "http://localhost/ws-php-RD/TRACEGPS/api/ValiderDemandeAutorisation?a=". $mdp;
-            $contenuMail .= "&b=" . $pseudoDestinataire ."&c=" . $pseudo ."&d=1\n\n";
-            $contenuMail .= "Pour refuser la demande, cliquez sur ce lien :\n";
-            $contenuMail .= "http://localhost/ws-php-RD/TRACEGPS/api/ValiderDemandeAutorisation?a=". $mdp;
-            $contenuMail .= "&b=" . $pseudoDestinataire ."&c=" . $pseudo ."&d=0";
-            $ok = Outils::envoyerMail($adrMailDestinaire, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
+            $contenuMail .= $ADR_SERVICE_WEB . "ValiderDemandeAutorisation.php?a=" . $utilisateurDestinataire->getMdpSha1();
+            $contenuMail .= "&b=" . $utilisateurDestinataire->getPseudo() . "&c=" . $utilisateurDemandeur->getPseudo() . "&d=1";
+            $contenuMail .= "\n\n";
+            $contenuMail .= "Pour rejeter la demande, cliquez sur ce lien :\n";
+            $contenuMail .= $ADR_SERVICE_WEB . "ValiderDemandeAutorisation.php?a=" . $utilisateurDestinataire->getMdpSha1();
+            $contenuMail .= "&b=" . $utilisateurDestinataire->getPseudo() . "&c=" . $utilisateurDemandeur->getPseudo() . "&d=0";
+
+            $ok = Outils::envoyerMail($adrMail, $sujetMail, $contenuMail, $ADR_MAIL_EMETTEUR);
             if ( ! $ok ) {
-                $message = "Erreur : l'envoi du courriel au demandeur a rencontré un problème.";
+                $msg = "Erreur : l'envoi du courriel de demande d'autorisation a rencontré un problème.";
                 $code_reponse = 500;
             }
             else {
-                $message = "Autorisation envoyé.<br>Votre courriel a été envoyé au destinataire.";
+                // tout a fonctionné
+                $msg = $pseudoDestinataire . " va recevoir un courriel avec votre demande.";
                 $code_reponse = 200;
             }
-
         }
     }
+    }
 }
-unset($dao);   // ferme la connexion à MySQL
+// ferme la connexion à MySQL
+unset($dao);
 
+// création du flux en sortie
 if ($lang == "xml") {
     $content_type = "application/xml; charset=utf-8";      // indique le format XML pour la réponse
-    $donnees = creerFluxXML ($message);
+    $donnees = creerFluxXML($msg);
 }
 else {
     $content_type = "application/json; charset=utf-8";      // indique le format Json pour la réponse
-    $donnees = creerFluxJSON ($message);
+    $donnees = creerFluxJSON($msg);
 }
 
 // envoi de la réponse HTTP
-
-http_response_code($code_reponse);
-header("Content-Type: " . $content_type);
-echo $donnees;
+$this->envoyerReponse($code_reponse, $content_type, $donnees);
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
@@ -104,16 +115,7 @@ exit;
 
 // création du flux XML en sortie
 function creerFluxXML($msg)
-{
-    /* Exemple de code XML
-         <?xml version="1.0" encoding="UTF-8"?>
-         <!--Service web DemanderUneAutorisation - BTS SIO - Lycée De La Salle - Rennes-->
-         <data>
-            <reponse>Erreur : données incomplètes.</reponse>
-         </data>
-     */
-
-    // crée une instance de DOMdocument (DOM : Document Object Model)
+{// crée une instance de DOMdocument (DOM : Document Object Model)
     $doc = new DOMDocument();
 
     // specifie la version et le type d'encodage
@@ -129,9 +131,14 @@ function creerFluxXML($msg)
     $elt_data = $doc->createElement('data');
     $doc->appendChild($elt_data);
 
-    // place l'élément 'reponse' juste après l'élément 'data'
-    $elt_reponse = $doc->createElement('reponse', $msg);
+    // place l'élément 'reponse' dans l'élément 'data'
+    $elt_reponse = $doc->createElement('reponse');
+    $elt_reponse->appendChild($doc->createTextNode($msg));
     $elt_data->appendChild($elt_reponse);
+
+    // place l'élément 'donnees' dans l'élément 'data'
+    $elt_donnees = $doc->createElement('donnees');
+    $elt_data->appendChild($elt_donnees);
 
     // Mise en forme finale
     $doc->formatOutput = true;
@@ -147,24 +154,20 @@ function creerFluxJSON($msg)
 {
     /* Exemple de code JSON
          {
-             "data":{
-                "reponse": "authentification incorrecte."
+             "data": {
+                 "reponse": "Erreur : authentification incorrecte."
              }
          }
      */
 
-    // 2 notations possibles pour créer des tableaux associatifs (la deuxième est en commentaire)
-
     // construction de l'élément "data"
     $elt_data = ["reponse" => $msg];
-//     $elt_data = array("reponse" => $msg);
 
     // construction de la racine
     $elt_racine = ["data" => $elt_data];
-//     $elt_racine = array("data" => $elt_data);
 
     // retourne le contenu JSON (l'option JSON_PRETTY_PRINT gère les sauts de ligne et l'indentation)
     return json_encode($elt_racine, JSON_PRETTY_PRINT);
 }
 
-?>
+// ================================================================================================
