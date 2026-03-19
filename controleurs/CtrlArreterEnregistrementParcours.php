@@ -16,7 +16,7 @@ else
     $idTraceAConsulter = $_SESSION['idTrace'];
     
     // connexion du serveur web à la base MySQL
-    include_once ('modele/DAO.class.php');
+    include_once ('modele/DAO.php');
     $dao = new DAO();
     $laTrace = $dao->getUneTrace($idTraceAConsulter);
     

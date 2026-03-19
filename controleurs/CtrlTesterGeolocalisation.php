@@ -12,6 +12,6 @@ if ( $_SESSION['niveauConnexion'] == 0) {
 }
 else {
     // pour inclure la clé API de Google Maps
-    include_once ('modele/DAO.class.php');
+    include_once ('modele/DAO.php');
     include_once ('vues/VueTesterGeolocalisation.php');
 }

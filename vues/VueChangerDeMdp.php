@@ -85,7 +85,7 @@
 		<div data-role="page" id="page_principale">
 			<div data-role="header" data-theme="<?php echo $themeNormal; ?>">
 				<h4><?php echo $TITRE_APPLI; ?></h4>
-				<a href="index.php?action=Menu" data-transition="<?php echo $transition; ?>">Retour menu</a>
+				<a href="index.php?action=Deconnexion" data-transition="<?php echo $transition; ?>">Retour menu</a>
 			</div>
 			<div data-role="content">
 				<h4 style="text-align: center; margin-top: 10px; margin-bottom: 10px;">Changer de mot de passe</h4>

@@ -20,6 +20,7 @@ else
         $message = '';
         $typeMessage = '';			// 2 valeurs possibles : 'information' ou 'avertissement'
         $themeFooter = $themeNormal;
+        $envoyerMail = 'off';
         include_once ('vues/VueDemarrerEnregistrementParcours.php');
     }
     else
@@ -28,7 +29,7 @@ else
         if ( empty ($_POST ["txtLongitude"]) == true)  $longitude = "";  else   $longitude = $_POST ["txtLongitude"];
         if ( empty ($_POST ["txtAltitude"]) == true)  $altitude = "0";  else   $altitude = $_POST ["txtAltitude"];
         if ( empty ($_POST ["btnFrequence"]) == true)  $frequence = "";  else   $frequence = $_POST ["btnFrequence"];
-        
+
         if ($latitude == '' || $longitude == '' || $frequence == '')    // l'altitude n'est pas obligatoire
         {   // si les données sont incomplètes, réaffichage de la vue avec un message explicatif
             $message = 'Erreur : données incomplètes.';
@@ -38,7 +39,7 @@ else
         }
         else
         {   // connexion du serveur web à la base MySQL
-            include_once ('modele/DAO.class.php');
+            include_once ('modele/DAO.php');
             $dao = new DAO();
             
             // récupération de l'id de l'utilisateur

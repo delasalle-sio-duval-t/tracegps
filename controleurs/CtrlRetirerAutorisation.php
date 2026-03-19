@@ -33,7 +33,7 @@ else {
             if ( empty ($_POST ["txtTexteMessage"]) == true)  $texteMessage = "";  else   $texteMessage = $_POST ["txtTexteMessage"];
             
             // connexion du serveur web à la base MySQL
-            include_once ('modele/DAO.class.php');
+            include_once ('modele/DAO.php');
             $dao = new DAO();
             
             $utilisateurAutorisant = $dao->getUnUtilisateur($pseudo);
