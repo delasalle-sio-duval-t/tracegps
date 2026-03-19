@@ -58,7 +58,7 @@ class Api extends Rest
     
     // Ce service permet permet à un utilisateur de s'authentifier
     private function Connecter()
-    {   include_once ("services/Connecter.php");
+    {   include_once("services/Connecter.php");
     }
     
     // Ce service permet permet à un utilisateur de changer son mot de passe

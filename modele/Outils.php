@@ -201,7 +201,7 @@ class Outils
 	    $message = str_replace("&", "$$", $message);
 	    
 	    // préparation de l'URL du service web avec ses paramètres
-	    $urlService = "http://sio.lyceedelasalle.fr/tracegps/services/ServiceEnvoyerMail.php";
+	    $urlService = "https://sio.lyceedelasalle.fr/tracegps/services/ServiceEnvoyerMail.php";
 	    $urlService .= "?adresseDestinataire=" . $adresseDestinataire;
 	    $urlService .= "&sujet=" . $sujet;
 	    $urlService .= "&message=" . $message;
@@ -296,6 +296,13 @@ class Outils
 		// on retourne true si le numéro est bon, mais aussi si le numéro est vide :
 		if ( preg_match ( $EXPRESSION , $numTelAvalider) == true || $numTelAvalider == "" ) return true; else return false;
 	}
+
+    public static function  estUnMdpValide($unMdp)
+    {	// utilisation d'une expression régulière pour vérifier un mot de passe
+        $EXPRESSION = "#^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$#";
+        // on retourne true si le mdp est bon :
+        if ( preg_match ( $EXPRESSION , $unMdp) == true) return true; else return false;
+    }
 
 } // fin de la classe Outils
 

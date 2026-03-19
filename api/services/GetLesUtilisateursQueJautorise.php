@@ -17,7 +17,7 @@
 // Les paramètres doivent être passés par la méthode GET :
 //     http://<hébergeur>/tracegps/api/GetTousLesUtilisateurs?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
 
-include_once ('C:\wamp64\www\ws-php-td\modele\DAO.php');
+include_once ('..\..\modele\DAO.php');
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();

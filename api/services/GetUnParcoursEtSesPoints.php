@@ -3,8 +3,8 @@
 // fichier :  api/services/EnvoyerPosition.php
 // dernière modification : 16/10/2025 par kG
 
-include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\PointDeTrace.php');
-include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\DAO.php');
+include_once ('..\..\modele\PointDeTrace.php');
+include_once ('..\..\modele\DAO.php');
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
 
