@@ -20,7 +20,7 @@ else
         $message = '';
         $typeMessage = '';			// 2 valeurs possibles : 'information' ou 'avertissement'
         $themeFooter = $themeNormal;
-        $envoyerMail = 'off';
+        $envoyerMail = '';
         include_once ('vues/VueDemarrerEnregistrementParcours.php');
     }
     else
@@ -60,14 +60,36 @@ else
             $vitesse = 0;
             $unPoint = new PointDeTrace($idTrace, $idPoint, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio, $tempsCumule, $distanceCumulee, $vitesse);
             $ok = $dao->creerUnPointDeTrace($unPoint);
-            
-            unset($dao);		// fermeture de la connexion à MySQL
+
+            $envoyerMail = isset($_POST['caseEnvoyerMail']) ? 'on' : 'off';
+
+            if ($envoyerMail == "on") {
+
+                $UtilisateursAutorises = $dao->getLesUtilisateursAutorises($idUtilisateurConsulte);
+
+                $AdrMailEmetteur = $dao->getUnUtilisateur($pseudo)->getAdrMail();
+
+                foreach ($UtilisateursAutorises as $UtilisateurAutorise)
+                {
+                    $adresseDestinataire = $dao->getUnUtilisateur($UtilisateurAutorise->getPseudo())->getAdrMail();
+                    $sujet = "Nouveau parcours de " . $pseudo;
+                    $message = "Cher ou chère " . $UtilisateurAutorise->getPseudo(). ",\n";
+                    $message .= "Vous avez demandé à " . $pseudo . " l'autorisation de consulter ses parcours.\n";
+                    $message .= $pseudo . " vient de démarrer un nouveau parcours à " . date('H:i:s') . ".\n";
+                    $message .= "Cordialement,\n";
+                    $message .= "L'équipe TraceGPS";
+                    $adresseEmetteur = $AdrMailEmetteur;
+
+                    $ok = Outils::envoyerMail($adresseDestinataire, $sujet, $message, $adresseEmetteur);
+                }
+            }
+
+            unset($dao); // fermeture de la connexion à MySQL
             
             // on mémorise les paramètres dans des variables de session
             $_SESSION['frequence'] = $frequence;
             $_SESSION['idTrace'] = $idTrace;
             $_SESSION['idPoint'] = $idPoint;
-            
             // redirection vers la page d'envoi de la position
             header ("Location: index.php?action=EnvoyerPosition");
         }
