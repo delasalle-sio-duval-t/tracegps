@@ -12,7 +12,7 @@ if ($_SESSION['niveauConnexion'] != 2) {
 }
 else {
     // connexion du serveur web à la base MySQL
-    include_once ('modele/DAO.class.php');
+    include_once ('modele/DAO.php');
     $dao = new DAO();
     
     // récupération de la liste des utilisateurs à l'aide de la méthode getTousLesUtilisateurs de la classe DAO

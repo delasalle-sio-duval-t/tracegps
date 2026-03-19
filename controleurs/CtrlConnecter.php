@@ -45,7 +45,7 @@ else {
 	}
 	else {
 		// connexion du serveur web à la base MySQL
-		include_once ('modele/DAO.class.php');
+		include_once ('modele/DAO.php');
 		$dao = new DAO();
 		
 		// test de l'authentification de l'utilisateur

@@ -34,10 +34,10 @@ else {
             $themeFooter = $themeProbleme;
             include_once ('vues/VueChangerDeMdp.php');
         }
-        else {
-            if ( strlen($nouveauMdp) < 8 ) {
+        else { include_once ('modele/Outils.php');
+            if (!Outils::estUnMdpValide($nouveauMdp)) {
                 // si le mot de passe a moins de 8 caractères, réaffichage de la vue avec un message explicatif
-                $message = 'Le mot de passe doit comporter au moins 8 caractères !';
+                $message = 'les nouveaux mots de passe devront en plus comporter au moins 1 lettre minuscule, 1 lettre majuscule et 1 chiffre.';
                 $typeMessage = 'avertissement';
                 $themeFooter = $themeProbleme;
                 include_once ('vues/VueChangerDeMdp.php');
@@ -52,7 +52,7 @@ else {
                 }
                 else {
                     // connexion du serveur web à la base MySQL
-                    include_once ('modele/DAO.class.php');
+                    include_once ('modele/DAO.php');
                     $dao = new DAO();
                     
                     // enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en SHA1
@@ -74,15 +74,16 @@ else {
                             $typeMessage = 'avertissement';
                             $themeFooter = $themeProbleme;
                             unset($dao);		// fermeture de la connexion à MySQL
-                            include_once ('vues/VueChangerDeMdp.php');
+                            include_once ('vues/VueMenu.php');
                         }
                         else {
                             // tout a bien fonctionné
                             $message = "Enregistrement effectué.<br>Vous allez recevoir un mail de confirmation.";
                             $typeMessage = 'information';
                             $themeFooter = $themeNormal;
+                            $_SESSION['mdp'] = $nouveauMdp;
                             unset($dao);		// fermeture de la connexion à MySQL
-                            include_once ('vues/VueChangerDeMdp.php');
+                            include_once ('vues/VueMenu.php');
                         }
                     }
                 }

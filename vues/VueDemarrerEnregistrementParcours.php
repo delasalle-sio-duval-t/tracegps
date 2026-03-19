@@ -120,6 +120,11 @@
 						<input type="text" name="txtAltitude" id="txtAltitude" readonly="readonly" data-mini="true" placeholder="Altitude" value="<?php echo $altitude; ?>">
 					</div>
 
+                    <div data-role="fieldcontain" data-type="horizontal" class="ui-hide-label">
+                        <label for="caseEnvoyerMail">Envoyer un mail au personne ayant accès au parcours</label>
+                        <input type="checkbox" name="caseEnvoyerMail" id="caseEnvoyerMail" data-mini="true" <?php if ($envoyerMail== 'on') echo 'checked'; ?>>
+                    </div>
+
 					<div data-role="fieldcontain">
 						<input type="submit" name="btnDemarrer" id="btnDemarrer" value="Démarrer l'enregistrement" data-mini="true">
 					</div>

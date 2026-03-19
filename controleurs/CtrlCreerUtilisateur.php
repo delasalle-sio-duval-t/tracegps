@@ -21,7 +21,7 @@ else {
 	if ( empty ($_POST ["txtNumTel"]) == true)  $numTel = "";  else   $numTel = $_POST ["txtNumTel"];
 	
 	// inclusion de la classe Outils pour utiliser les méthodes statiques estUnNumTelValide, estUneAdrMailValide et creerMdp
-	include_once ('modele/Outils.class.php');
+	include_once ('modele/Outils.php');
 	
 	// le numéro de téléphone est facultatif mais doit être correct
 	if ($pseudo == '' || $adrMail == '' || Outils::estUnNumTelValide($numTel) == false) {
@@ -33,7 +33,7 @@ else {
 	}
 	else {
 		// connexion du serveur web à la base MySQL
-		include_once ('modele/DAO.class.php');
+		include_once ('modele/DAO.php');
 		$dao = new DAO();
 			
 		if ( strlen($pseudo) < 8 || $dao->existePseudoUtilisateur($pseudo) ) {

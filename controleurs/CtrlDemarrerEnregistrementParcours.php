@@ -20,6 +20,7 @@ else
         $message = '';
         $typeMessage = '';			// 2 valeurs possibles : 'information' ou 'avertissement'
         $themeFooter = $themeNormal;
+        $envoyerMail = 'off';
         include_once ('vues/VueDemarrerEnregistrementParcours.php');
     }
     else
@@ -38,7 +39,7 @@ else
         }
         else
         {   // connexion du serveur web à la base MySQL
-            include_once ('modele/DAO.class.php');
+            include_once ('modele/DAO.php');
             $dao = new DAO();
             
             // récupération de l'id de l'utilisateur
