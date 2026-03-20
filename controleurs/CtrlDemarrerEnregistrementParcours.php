@@ -28,8 +28,7 @@ else
         if ( empty ($_POST ["txtLongitude"]) == true)  $longitude = "";  else   $longitude = $_POST ["txtLongitude"];
         if ( empty ($_POST ["txtAltitude"]) == true)  $altitude = "0";  else   $altitude = $_POST ["txtAltitude"];
         if ( empty ($_POST ["btnFrequence"]) == true)  $frequence = "";  else   $frequence = $_POST ["btnFrequence"];
-        if ( empty($_POST["caseMail"]) ) $envoyerMail = false;
-        else $envoyerMail = true;
+        if ( empty($_POST["caseMail"]) ) $envoyerMail = false; else $envoyerMail = true;
         
         if ($latitude == '' || $longitude == '' || $frequence == '')    // l'altitude n'est pas obligatoire
         {   // si les données sont incomplètes, réaffichage de la vue avec un message explicatif
@@ -43,8 +42,9 @@ else
             include_once ('modele/DAO.php');
             $dao = new DAO();
 
-            global $ADR_MAIL_EMETTEUR;
             $pseudo = $_SESSION['pseudo'];
+            $adrMailEmetteur = $dao->getUnUtilisateur($pseudo)->getAdrMail();
+
             $idUtilisateurConsulte = $dao->getUnUtilisateur($pseudo)->getId();
             
             // créer et enregistrer la trace
@@ -70,7 +70,7 @@ else
                     $message .= $pseudo . " vient de démarrer un nouveau parcours à " . date('H:i:s') . ".\n\n";
                     $message .= "Cordialement.\nL'équipe TraceGPS";
 
-                    Outils::envoyerMail($destinataire, $sujet, $message, $ADR_MAIL_EMETTEUR);
+                    Outils::envoyerMail($destinataire, $sujet, $message, $adrMailEmetteur);
                 }
             }
             // créer et enregistrer le premier point
