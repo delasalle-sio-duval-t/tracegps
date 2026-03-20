@@ -4,19 +4,21 @@
 // Rôle : traiter la demande d'envoi d'un nouveau mot de passe
 // Dernière mise à jour : 01/11/2021 par dP
 
-if ( ! isset ($_POST ["txtPseudo"]) == true) {
+if ( ! isset ($_POST ["txtPseudo"]) == true && ! isset ($_POST ["txtMail"])) {
 	// si les données n'ont pas été postées, c'est le premier appel du formulaire : affichage de la vue sans message d'erreur
 	$nom = '';
 	$message = '';
 	$typeMessage = '';			// 2 valeurs possibles : 'information' ou 'avertissement'
 	$themeFooter = $themeNormal;
+    $adrMail = "";
 	include_once ('vues/VueDemanderMdp.php');
 }
 else {
 	// récupération des données postées
     if ( empty ($_POST ["txtPseudo"]) == true)  $pseudo = "";  else   $pseudo = $_POST ["txtPseudo"];
+    if ( empty ($_POST ["txtMail"]) == true)  $adrMail = "";  else   $adrMail = $_POST ["txtMail"];
 			
-    if ($pseudo == '') {
+    if ($pseudo == '' || $adrMail == '') {
 		// si les données sont incomplètes, réaffichage de la vue avec un message explicatif
 		$message = 'Erreur : données incomplètes.';
 		$typeMessage = 'avertissement';
@@ -27,6 +29,8 @@ else {
 		// connexion du serveur web à la base MySQL
 		include_once ('modele/DAO.php');
 		$dao = new DAO();
+
+        $unUtilisateur = $dao->getUnUtilisateur($pseudo);
 		
 		// test de l'existence de l'utilisateur
 		if ( ! $dao->existePseudoUtilisateur($pseudo) )  {
@@ -37,6 +41,28 @@ else {
 			unset($dao);		// fermeture de la connexion à MySQL
 			include_once ('vues/VueDemanderMdp.php');
 		}
+
+        elseif ( !(Outils::estUneAdrMailValide($adrMail)) || !($dao->existeAdrMailUtilisateur($adrMail)))
+        {
+            // si le mail n'existe pas, retour à la vue
+            $message = "Erreur : adresse mail  invalide ou inexistante.";
+            $typeMessage = 'avertissement';
+            $themeFooter = $themeProbleme;
+            unset($dao);		// fermeture de la connexion à MySQL
+            include_once ('vues/VueDemanderMdp.php');
+        }
+
+
+        elseif ($unUtilisateur->getAdrMail() != $adrMail)
+        {
+            // si le mail et le pseudo ne correspond pas, retour à la vue
+            $message = "Erreur : l'adresse mail et le pseudo ne correspond pas à un même compte.";
+            $typeMessage = 'avertissement';
+            $themeFooter = $themeProbleme;
+            unset($dao);		// fermeture de la connexion à MySQL
+            include_once ('vues/VueDemanderMdp.php');
+        }
+
 		else {
 			// génération d'un nouveau mot de passe
 			$nouveauMdp = Outils::creerMdp();

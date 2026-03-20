@@ -144,10 +144,10 @@ class DAO
         // préparation de la requête de recherche
         $txt_req = "Select id, pseudo, mdpSha1, adrMail, numTel, niveau, dateCreation, nbTraces, dateDerniereTrace";
         $txt_req .= " from tracegps_vue_utilisateurs";
-        $txt_req .= " where pseudo = :pseudo";
+        $txt_req .= " where pseudo = :pseudo or adrMail = :pseudo";
         $req = $this->cnx->prepare($txt_req);
         // liaison de la requête et de ses paramètres
-        $req->bindValue("pseudo", $pseudo, PDO::PARAM_STR);
+        $req->bindValue(":pseudo", $pseudo, PDO::PARAM_STR);
         // extraction des données
         $req->execute();
         $uneLigne = $req->fetch(PDO::FETCH_OBJ);

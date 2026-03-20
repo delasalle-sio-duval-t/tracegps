@@ -42,15 +42,17 @@ else
             include_once ('modele/DAO.php');
             $dao = new DAO();
 
+            date_default_timezone_set('Europe/Paris');
+
             // récupération de l'id de l'utilisateur
             $idUtilisateurConsulte = $dao->getUnUtilisateur($pseudo)->getId();
-            
+
             // créer et enregistrer la trace
             $laTrace = new Trace(0, date('Y-m-d H:i:s', time()), null, false, $idUtilisateurConsulte);
             $ok = $dao->creerUneTrace($laTrace);
             // récupération de l'id de la trace
             $idTrace = $laTrace->getId();
-            
+
             // créer et enregistrer le premier point
             $idPoint = 1;
             $dateHeure = date('Y-m-d H:i:s', time());
@@ -60,14 +62,37 @@ else
             $vitesse = 0;
             $unPoint = new PointDeTrace($idTrace, $idPoint, $latitude, $longitude, $altitude, $dateHeure, $rythmeCardio, $tempsCumule, $distanceCumulee, $vitesse);
             $ok = $dao->creerUnPointDeTrace($unPoint);
-            
+
+            $envoyerMail = isset($_POST['caseEnvoyerMail']) ? 'on' : 'off';
+
+            if ($envoyerMail == "on") {
+
+                $UtilisateursAutorises = $dao->getLesUtilisateursAutorises($idUtilisateurConsulte);
+
+                $AdrMailEmetteur = $dao->getUnUtilisateur($pseudo)->getAdrMail();
+
+                foreach ($UtilisateursAutorises as $UtilisateurAutorise)
+                {
+                    $adresseDestinataire = $dao->getUnUtilisateur($UtilisateurAutorise->getPseudo())->getAdrMail();
+                    $sujet = "Nouveau parcours de " . $pseudo;
+                    $message = "Cher ou chère " . $UtilisateurAutorise->getPseudo(). ",\n";
+                    $message .= "Vous avez demandé à " . $pseudo . " l'autorisation de consulter ses parcours.\n";
+                    $message .= $pseudo . " vient de démarrer un nouveau parcours à " . date('H:i:s') . ".\n";
+                    $message .= "Cordialement,\n";
+                    $message .= "L'équipe TraceGPS";
+                    $adresseEmetteur = $AdrMailEmetteur;
+
+                    $ok = Outils::envoyerMail($adresseDestinataire, $sujet, $message, $adresseEmetteur);
+                }
+            }
+
             unset($dao);		// fermeture de la connexion à MySQL
             
             // on mémorise les paramètres dans des variables de session
             $_SESSION['frequence'] = $frequence;
             $_SESSION['idTrace'] = $idTrace;
             $_SESSION['idPoint'] = $idPoint;
-            
+
             // redirection vers la page d'envoi de la position
             header ("Location: index.php?action=EnvoyerPosition");
 
