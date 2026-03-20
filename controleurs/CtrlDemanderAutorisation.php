@@ -43,10 +43,11 @@ else {
             }
             else {
                 // connexion du serveur web à la base MySQL
-                include_once ('modele/DAO.class.php');
+                include_once ('modele/DAO.php');
                 $dao = new DAO();
+                $pseudo = $_SESSION['pseudo'];
                 $utilisateurDemandeur = $dao->getUnUtilisateur($pseudo);
-                
+                global $ADR_MAIL_EMETTEUR;
                 // envoi d'un mail de confirmation de l'enregistrement
                 $utilisateurDestinataire = $dao->getUnUtilisateur($pseudoDestinataire);
                 $adrMail = $utilisateurDestinataire->getAdrMail();

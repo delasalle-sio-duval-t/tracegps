@@ -12,7 +12,7 @@ if ( $_SESSION['niveauConnexion'] == 0) {
 }
 else {
     // connexion du serveur web à la base MySQL
-    include_once ('modele/DAO.class.php');
+    include_once ('modele/DAO.php');
     $dao = new DAO();
     
     // récupération de l'id du demandeur (pour appeler la fonction autoriseAConsulter dans la vue VueChoisirUtilisateur)

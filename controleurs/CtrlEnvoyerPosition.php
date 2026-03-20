@@ -30,7 +30,7 @@ else {
         if ( empty ($_POST ["txtStop"]) == true)  $stop = "";  else   $stop = $_POST ["txtStop"];
 
         // connexion du serveur web à la base MySQL
-        include ('modele/DAO.class.php');
+        include ('modele/DAO.php');
         $dao = new DAO();
         
         if (strtolower($stop) == 'stop') {

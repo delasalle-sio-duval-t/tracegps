@@ -28,6 +28,8 @@ else
         if ( empty ($_POST ["txtLongitude"]) == true)  $longitude = "";  else   $longitude = $_POST ["txtLongitude"];
         if ( empty ($_POST ["txtAltitude"]) == true)  $altitude = "0";  else   $altitude = $_POST ["txtAltitude"];
         if ( empty ($_POST ["btnFrequence"]) == true)  $frequence = "";  else   $frequence = $_POST ["btnFrequence"];
+        if ( empty($_POST["caseMail"]) ) $envoyerMail = false;
+        else $envoyerMail = true;
         
         if ($latitude == '' || $longitude == '' || $frequence == '')    // l'altitude n'est pas obligatoire
         {   // si les données sont incomplètes, réaffichage de la vue avec un message explicatif
@@ -38,10 +40,11 @@ else
         }
         else
         {   // connexion du serveur web à la base MySQL
-            include_once ('modele/DAO.class.php');
+            include_once ('modele/DAO.php');
             $dao = new DAO();
-            
-            // récupération de l'id de l'utilisateur
+
+            global $ADR_MAIL_EMETTEUR;
+            $pseudo = $_SESSION['pseudo'];
             $idUtilisateurConsulte = $dao->getUnUtilisateur($pseudo)->getId();
             
             // créer et enregistrer la trace
@@ -49,7 +52,27 @@ else
             $ok = $dao->creerUneTrace($laTrace);
             // récupération de l'id de la trace
             $idTrace = $laTrace->getId();
-            
+
+            if ($envoyerMail == true)
+            {
+                // récupération des utilisateurs autorisés
+                $lesUtilisateurs = $dao->getLesUtilisateursAutorises($idUtilisateurConsulte);
+
+                foreach ($lesUtilisateurs as $unUtilisateur)
+                {
+                    $destinataire = $unUtilisateur->getAdrMail();
+                    $pseudoDest = $unUtilisateur->getPseudo();
+
+                    $sujet = "Démarrage d'un parcours TraceGPS";
+
+                    $message = "Cher ou chère " . $pseudoDest . ",\n\n";
+                    $message .= "Vous avez demandé à " . $pseudo . " l'autorisation de consulter ses parcours.\n";
+                    $message .= $pseudo . " vient de démarrer un nouveau parcours à " . date('H:i:s') . ".\n\n";
+                    $message .= "Cordialement.\nL'équipe TraceGPS";
+
+                    Outils::envoyerMail($destinataire, $sujet, $message, $ADR_MAIL_EMETTEUR);
+                }
+            }
             // créer et enregistrer le premier point
             $idPoint = 1;
             $dateHeure = date('Y-m-d H:i:s', time());

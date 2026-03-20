@@ -45,7 +45,8 @@ else {
 	}
 	else {
 		// connexion du serveur web à la base MySQL
-		include_once ('modele/DAO.class.php');
+		include_once ('modele/DAO.php');
+		include_once ('modele/Outils.php');
 		$dao = new DAO();
 		
 		// test de l'authentification de l'utilisateur
@@ -56,6 +57,7 @@ else {
 		$_SESSION['mdp'] = $mdp;
 		$_SESSION['niveauConnexion'] = $niveauConnexion;
 		$_SESSION['afficherMdp'] = $afficherMdp;
+		$_SESSION['mdpValide'] = Outils::estUnMdpValide($mdp);
 		
 		unset($dao);		// fermeture de la connexion à MySQL
 		

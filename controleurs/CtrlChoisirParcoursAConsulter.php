@@ -17,7 +17,7 @@ else {
     }
     else
     {   // connexion du serveur web à la base MySQL
-        include_once ('modele/DAO.class.php');
+        include_once ('modele/DAO.php');
         $dao = new DAO();
 
         // récupération du pseudo et de l'id de l'utilisateur

@@ -202,15 +202,25 @@ class Outils
 	    
 	    // préparation de l'URL du service web avec ses paramètres
 	    $urlService = "http://sio.lyceedelasalle.fr/tracegps/services/ServiceEnvoyerMail.php";
-	    $urlService .= "?adresseDestinataire=" . $adresseDestinataire;
-	    $urlService .= "&sujet=" . $sujet;
-	    $urlService .= "&message=" . $message;
-	    $urlService .= "&adresseEmetteur=" . $adresseEmetteur;
-	    
-	    // création d'un objet DOMDocument pour traiter un flux de données XML
+	    $urlService .= "?adresseDestinataire=" . urlencode($adresseDestinataire);
+	    $urlService .= "&sujet=" . urlencode($sujet);
+	    $urlService .= "&message=" . urlencode($message);
+	    $urlService .= "&adresseEmetteur=" . urlencode($adresseEmetteur);
+        // récupération de la réponse brute
+        $response = @file_get_contents($urlService);
+
+        // debug si problème
+        if ($response === false) {
+            return false;
+        }
+
+        // création d'un objet DOMDocument pour traiter un flux de données XML
 	    $dom = new DOMDocument();
 	    // chargement des données à partir de l'url du service web
-	    if ( ! $dom->load($urlService )) return false;
+        if (!@$dom->loadXML($response)) {
+            // la réponse n'est pas du XML valide
+            return false;
+        }
 	    // récupération du noeud XML correspondant à la balise <reponse>
 	    $lesNoeuds = $dom->getElementsByTagName("reponse");
 	    foreach ($lesNoeuds as $unNoeud)
@@ -238,6 +248,14 @@ class Outils
 		// on retourne true si l'adresse est bonne, mais aussi si l'adresse est vide :
 		if ( preg_match ( $EXPRESSION , $adrMailAvalider) == true || $adrMailAvalider == "" ) return true; else return false;
 	}
+
+    // La fonction estUnMdpValide($mdpAvalider) fournit true si le mot de passe reçu en paramètre est correcte, false sinon
+    // Dernière mise à jour : 17/03/2026 par lB
+    public static function estUnMdpValide($mdpAvalider) {
+        $EXPRESSION = '#^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$#';
+        // on retourne true si le mot de passe est bon :
+        if ( preg_match ( $EXPRESSION , $mdpAvalider) == true) return true; else return false;
+    }
 	
 	// La fonction estUneDateValide($laDateAvalider) fournit true si la date reçue en paramètre est correcte 
 	// (format jj/mm/aaaa ou bien jj-mm-aaaa), false sinon

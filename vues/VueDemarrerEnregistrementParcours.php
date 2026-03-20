@@ -105,6 +105,8 @@
 						</fieldset>
 						
 					</div>
+
+
 					
 					<div data-role="fieldcontain" class="ui-hide-label">
 						<p><b>Attention :</b> le bouton <i>Démarrer l'enregistrement</i> est désactivé tant que vous n'avez pas choisi la fréquence et tant que 
@@ -119,6 +121,11 @@
 						<label for="txtAltitude">Altitude :</label>
 						<input type="text" name="txtAltitude" id="txtAltitude" readonly="readonly" data-mini="true" placeholder="Altitude" value="<?php echo $altitude; ?>">
 					</div>
+
+                    <div data-role="fieldcontain">
+                        <label for="caseMail">Prévenir les utilisateurs autorisés</label>
+                        <input type="checkbox" name="caseMail" id="caseMail" data-mini="true">
+                    </div>
 
 					<div data-role="fieldcontain">
 						<input type="submit" name="btnDemarrer" id="btnDemarrer" value="Démarrer l'enregistrement" data-mini="true">

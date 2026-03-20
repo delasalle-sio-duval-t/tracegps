@@ -12,9 +12,33 @@ if ( $_SESSION['niveauConnexion'] == 0) {
 }
 else {
     // connexion du serveur web à la base MySQL
-    include_once ('modele/DAO.class.php');
+    include_once ('modele/DAO.php');
+    include_once ('modele/Outils.php');
     $dao = new DAO();
-    
+
+    $mdp = $_SESSION['mdp'];
+
+    if ( $_SESSION['mdpValide'] == false  ) {
+
+            // préparation des variables pour la vue
+            $nouveauMdp = '';
+            $confirmationMdp = '';
+            $afficherMdp = 'off';
+
+            $message = "Pour des raisons de sécurité, nous vous invitons à changer votre mot de passe.<br>
+            Le nouveau mot de passe doit comporter au moins 8 caractères, dont au moins une lettre
+            minuscule, une lettre majuscule et un chiffre !";
+
+            $typeMessage = 'avertissement';
+            $themeFooter = $themeProbleme;
+
+            include_once ('vues/VueChangerDeMdp.php');
+        }
+
+    else {
     // affiche la vue
-    include_once ('vues/VueMenu.php');
+        include_once ('vues/VueMenu.php');
+    }
+    
+
 }

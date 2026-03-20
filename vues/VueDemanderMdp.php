@@ -32,10 +32,20 @@
 				<?php if ($typeMessage != 'information')    // si l'envoi vient de se faire, ne pas réafficher le formulaire
 				{ ?>
     				<form name="form1" id="form1" action="index.php?action=DemanderMdp" data-ajax="false" method="post" data-transition="<?php echo $transition; ?>">
-    					<p>Pour obtenir un nouveau mot de passe, indiquez votre pseudo.</p>
+    					<p>Pour obtenir un nouveau mot de passe, indiquez votre pseudo et votre adresse mail.</p>
     					<div data-role="fieldcontain" class="ui-hide-label">
     						<label for="txtPseudo">Utilisateur :</label>
     						<input type="text" name="txtPseudo" id="txtPseudo" data-mini="true" placeholder="Mon pseudo" required value="<?php echo $pseudo; ?>" >
+
+    						<label for="txtAdrMail">Adresse mail :</label>
+                            <input type="email"
+                                   name="txtAdrMail"
+                                   id="txtAdrMail"
+                                   data-mini="true"
+                                   placeholder="Mon adresse mail"
+                                   required
+                                   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                   value="<?php echo $adrMail; ?>">
     					</div>
     
     					<div data-role="fieldcontain">

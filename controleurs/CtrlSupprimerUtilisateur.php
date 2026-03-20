@@ -20,7 +20,7 @@ else {
         $pseudoUtilisateurASupprimer = $_GET ["pseudoUtilisateurASupprimer"];
 
         // connexion du serveur web à la base MySQL
-        include_once ('modele/DAO.class.php');
+        include_once ('modele/DAO.php');
         $dao = new DAO();
 
         $unUtilisateur = $dao->getUnUtilisateur($pseudoUtilisateurASupprimer);
