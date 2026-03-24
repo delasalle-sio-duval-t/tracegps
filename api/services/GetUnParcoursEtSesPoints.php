@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] != "GET")
 else {// Les paramètres doivent être présents
     if ($pseudo == "" || $mdpSha1 == "" || $idTrace == "") {
         $msg = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     } else {
 
         $reponse = $dao->getNiveauConnexion($pseudo, $mdpSha1);

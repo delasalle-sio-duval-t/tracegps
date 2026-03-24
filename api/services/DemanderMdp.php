@@ -17,7 +17,7 @@
 // Les paramètres doivent être passés par la méthode GET :
 //     http://<hébergeur>/tracegps/api/ChangerDeMdppseudo=europa&mdp=13e3668bbee30b004380052b086457b014504b3e&nouveauMdp=123&confirmationMdp=123&lang=xml
 
-include_once ('C:\wamp64\www\ws-php-kg\modele\DAO.php');
+include_once ('C:\wamp64\www\ws-php-kg\tracegps\modele\DAO.php');
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -31,19 +31,19 @@ if ($lang != "json") $lang = "xml";
 
 // La méthode HTTP utilisée doit être GET
 if ($_SERVER['REQUEST_METHOD'] != "GET")
-{	$msg = "Erreur : méthode HTTP incorrecte.";
-    $code_reponse = 406;
+{   $msg = "Erreur : méthode HTTP incorrecte.";
+    $code_reponse = 200;
 }
 else {
     // Les paramètres doivent être présents
     if ($pseudo == "") {
         $msg = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     } else {    // contrôle d'existence du pseudo de l'utilisateur
         $unUtilisateur = $dao->getUnUtilisateur($pseudo);
         if ($unUtilisateur == null) {
             $msg = "Erreur : pseudo inexistant.";
-            $code_reponse = 400;
+            $code_reponse = 200;
         } else {
             // génération d’un nouveau mdp aleatoire (8 caracteres/4 syllable)
             $nouveauMdp = genererMdp();
@@ -51,13 +51,13 @@ else {
             $ok = $dao->modifierMdpUtilisateur($pseudo, sha1($nouveauMdp));
             if (!$ok) {
                 $msg = "Erreur : problème lors de l'enregistrement du mot de passe.";
-                $code_reponse = 500;
+                $code_reponse = 200;
             } else {
                 // envoie un courriel  à l'utilisateur avec son nouveau mot de passe
                 $ok = $dao->envoyerMdp($pseudo, $nouveauMdp);
                 if (!$ok) {
                     $msg = "Enregistrement effectué ; l'envoi du courriel  de confirmation a rencontré un problème.";
-                    $code_reponse = 500;
+                    $code_reponse = 200;
                 } else {
                     $msg = "Enregistrement effectué ; vous allez recevoir un courriel de confirmation.";
                     $code_reponse = 200;

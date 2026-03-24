@@ -37,17 +37,17 @@ else {
     // Les paramètres doivent être présents
     if ($pseudo == '' || $adrMail == '' || Outils::estUnNumTelValide($numTel) == false) {
         $msg = "Erreur : données incomplètes ou incorrectes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     }
     else {
         if ( strlen($pseudo) < 8 || $dao->existePseudoUtilisateur($pseudo) ) {
             $msg = "Erreur : pseudo trop court (8 car minimum) ou déjà existant.";
-            $code_reponse = 400;
+            $code_reponse = 200;
         }
         else {
             if ( Outils::estUneAdrMailValide($adrMail) == false || $dao->existeAdrMailUtilisateur($adrMail) ) {
                 $msg = "Erreur : adresse mail incorrecte ou déjà existante.";
-                $code_reponse = 400;
+                $code_reponse = 200;
             }
             else {
                 // création d'un mot de passe aléatoire de 8 caractères

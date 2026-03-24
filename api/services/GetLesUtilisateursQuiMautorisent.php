@@ -17,7 +17,7 @@
 // Les paramètres doivent être passés par la méthode GET :
 //     http://<hébergeur>/tracegps/api/GetTousLesUtilisateurs?pseudo=callisto&mdp=13e3668bbee30b004380052b086457b014504b3e&lang=xml
 
-include_once ('C:\wamp64\www\ws-php-kg\modele\DAO.php');
+include_once ('C:\wamp64\www\ws-php-kg\TraceGPS\modele\DAO.php');
 
 // connexion du serveur web à la base MySQL
 $dao = new DAO();
@@ -43,12 +43,12 @@ else {
     // Les paramètres doivent être présents
     if ( $pseudo == "" || $mdpSha1 == "" )
     {   $msg = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     }
     else
     {   if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
         $msg = "Erreur : authentification incorrecte.";
-        $code_reponse = 401;
+        $code_reponse = 200;
     }
     else {
         // Récupération de la liste des utilisateurs autorisés
@@ -273,4 +273,3 @@ function creerFluxJSON($msg, $lesUtilisateurs)
 
 // ================================================================================================
 ?>
-

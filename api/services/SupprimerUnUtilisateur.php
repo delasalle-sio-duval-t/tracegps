@@ -37,26 +37,26 @@ else {
     // Les paramètres doivent être présents
     if ( $pseudo == "" || $mdpSha1 == "" || $pseudoAsupprimer == "" )
     {   $msg = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     }
     else
     {   // il faut être administrateur pour supprimer un utilisateur
         if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) != 2 )
         {   $msg = "Erreur : authentification incorrecte.";
-            $code_reponse = 401;
+            $code_reponse = 200;
         }
         else
         {  // contrôle d'existence de pseudoAsupprimer
             $unUtilisateur = $dao->getUnUtilisateur($pseudoAsupprimer);
             if ($unUtilisateur == null)
             {  $msg = "Erreur : pseudo utilisateur inexistant.";
-                $code_reponse = 400;
+                $code_reponse = 200;
             }
             else
             {   // si cet utilisateur possède encore des traces, sa suppression est refusée
                 if ( $unUtilisateur->getNbTraces() > 0 ) {
                     $msg = "Erreur : suppression impossible ; cet utilisateur possède encore des traces.";
-                    $code_reponse = 400;
+                    $code_reponse = 200;
                 }
                 else {
                     // suppression de l'utilisateur dans la BDD

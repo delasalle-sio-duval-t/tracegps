@@ -26,7 +26,7 @@ else {
     // Les paramètres doivent être présents
     if ($pseudo == "" || $mdp == "" || $pseudoARetirer == "") {
         $message = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     }
 
     else
@@ -36,12 +36,12 @@ else {
 
         if ( $niveauConnexion == 0 )
         {  $message = "Erreur : authentification incorrecte.";
-            $code_reponse = 401;
+            $code_reponse = 200;
         }
         elseif (!($dao->existePseudoUtilisateur($pseudoARetirer)))
         {
             $message = "Erreur : pseudo utilisateur inexistant.";
-            $code_reponse = 401;
+            $code_reponse = 200;
         }
         else
         {	$utilisateur = $dao->getUnUtilisateur($pseudo);
@@ -53,7 +53,7 @@ else {
 
             if (!($dao->autoriseAConsulter($idAutorisant, $idAutorise)))
             {	$message = "Erreur : l'autorisation n'était pas accordée.";
-                $code_reponse = 400;
+                $code_reponse = 200;
             }
 
             else {

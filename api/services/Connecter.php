@@ -52,7 +52,7 @@ else {
         switch ($niveauConnexion)
         {   case 0 :
             $msg = "Erreur : authentification incorrecte.";
-            $code_reponse = 401; break;
+            $code_reponse = 200; break;
             case 1 :
                 $msg = "Utilisateur authentifié.";
                 $code_reponse = 200; break;

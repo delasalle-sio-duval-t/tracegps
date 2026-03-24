@@ -33,26 +33,26 @@ else {
     // Les paramètres doivent être présents
     if ( $pseudo == "" || $mdpSha1 == "" || $idTrace== "" )
     {	$msg = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     }
     else
     {	// il faut être utilisateur pour supprimer un parcours
         if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 )
         {   $msg = "Erreur : authentification incorrecte.";
-            $code_reponse = 401;
+            $code_reponse = 200;
         }
         else {
             // contrôle de la trace existante
             $uneTrace = $dao->getUneTrace($idTrace);
             if ($uneTrace == null) {
                 $msg = "Erreur : parcours inexistant.";
-                $code_reponse = 400;
+                $code_reponse = 200;
             } else {
                 // il faut être propriétaire pour supprimer un parcours
                 $unUtilisateur  = $dao->getUnUtilisateur($pseudo);
                 if ($dao->getUneTrace($idTrace)->getIdUtilisateur() != $unUtilisateur->getId()) {
                     $msg = "Erreur : vous n'êtes pas le propriétaire de ce parcours.";
-                    $code_reponse = 401;
+                    $code_reponse = 200;
                 } else {
                     // suppression du parcours dans la BDD
                     $ok = $dao->supprimerUneTrace($idTrace);

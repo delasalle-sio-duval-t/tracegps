@@ -39,22 +39,22 @@ else {
 	// Les paramètres doivent être présents
 	if ( $pseudo == "" || $mdpSha1 == "" || $nouveauMdp == "" || $confirmationMdp == "" ) {
 		$msg = "Erreur : données incomplètes.";
-		$code_reponse = 400;
+		$code_reponse = 200;
 	}
 	else {
 		if ( strlen($nouveauMdp) < 8 ) {
 			$msg = 'Erreur : le mot de passe doit comporter au moins 8 caractères.';
-			$code_reponse = 400;
+			$code_reponse = 200;
 		}
 		else {
 			if ( $nouveauMdp != $confirmationMdp ) {
 				$msg = "Erreur : le nouveau mot de passe et sa confirmation sont différents.";
-				$code_reponse = 400;
+				$code_reponse = 200;
 			}
 			else {
 				if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
 					$msg = "Erreur : authentification incorrecte.";
-					$code_reponse = 401;
+					$code_reponse = 200;
 				}
 				else {
 					// enregistre le nouveau mot de passe de l'utilisateur dans la bdd après l'avoir codé en sha1

@@ -38,7 +38,7 @@ else {
     // Les paramètres doivent être présents et corrects
     if ( $mdpSha1 == "" || $pseudoAutorisant == "" || $pseudoAutorise == "" || ( $decision != 0 && $decision != 1 ) )
     {   $message = "Erreur : données incomplètes ou incorrectes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     }
     else
     {   // test de l'authentification de l'utilisateur
@@ -47,7 +47,7 @@ else {
 
         if ( $niveauConnexion == 0 )
         {  $message = "Erreur : authentification incorrecte.";
-            $code_reponse = 401;
+            $code_reponse = 200;
         }
         else
         {  $utilisateurDemandeur = $dao->getUnUtilisateur($pseudoAutorise);
@@ -58,7 +58,7 @@ else {
 
             if ($dao->autoriseAConsulter($idAutorisant, $idAutorise))
             {   $message = "Erreur : autorisation déjà accordée.";
-                $code_reponse = 400;
+                $code_reponse = 200;
             }
             else
             {

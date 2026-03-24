@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] != "GET")
 else {// Les paramètres doivent être présents
     if ( $pseudo == "" || $mdpSha1 == "" || $idTrace == "" || $dateHeure =="" || $latitude == "" || $longitude == "" || $altitude == "" || $rythmeCardio == "") {
         $msg = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     }
     else {
 
@@ -46,7 +46,7 @@ else {// Les paramètres doivent être présents
 
             if (is_null($uneTrace)) {
                 $msg = " Erreur : le numéro de trace n'existe pas.";
-                $code_reponse = 404;
+                $code_reponse = 200;
             }
 
             else {
@@ -55,7 +55,7 @@ else {// Les paramètres doivent être présents
 
                 if ($idUtilisateur != $unUtilisateur->getId()) {
                     $msg = " Erreur : le numéro de la trace ne correspond pas à cet utilisateur.";
-                    $code_reponse = 409;
+                    $code_reponse = 200;
                 }
 
                  else {
@@ -63,7 +63,7 @@ else {// Les paramètres doivent être présents
 
                      if ($uneTraceTerminee == 1) {
                          $msg = " Erreur : la trace est déjà terminée.";
-                         $code_reponse = 409;
+                         $code_reponse = 200;
                      }
 
                      else {

@@ -34,25 +34,25 @@ else {
     // Les paramètres doivent être présents
     if ($pseudo == "" || $mdpSha1 == "" || $idTrace == "") {
         $msg = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     } else {
         // contrôle de l'authentification
         if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 )
         {   $msg = "Erreur : authentification incorrecte.";
-            $code_reponse = 401;
+            $code_reponse = 200;
         }
         else {
             // contrôle de la trace existante
             $uneTrace = $dao->getUneTrace($idTrace);
             if ($uneTrace == null) {
                 $msg = "Erreur : parcours inexistant.";
-                $code_reponse = 400;
+                $code_reponse = 200;
             } else {
                 // il faut être propriétaire de la trace existante
                 $unUtilisateur  = $dao->getUnUtilisateur($pseudo);
                 if ($dao->getUneTrace($idTrace)->getIdUtilisateur() != $unUtilisateur->getId()) {
                     $msg = "Erreur : le numéro de trace ne correspond pas à cet utilisateur.";
-                    $code_reponse = 401;
+                    $code_reponse = 200;
                 } else {
                     if ($dao->getUneTrace($idTrace)->getTerminee() == 1) {
                         $msg = "Erreur : cette trace est déjà terminée.";

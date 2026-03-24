@@ -39,12 +39,12 @@ else {
 	// Les paramètres doivent être présents
 	if ( $pseudo == "" || $mdpSha1 == "" )
 	{   $msg = "Erreur : données incomplètes.";
-		$code_reponse = 400;
+		$code_reponse = 200;
 	}
 	else
 	{   if ( $dao->getNiveauConnexion($pseudo, $mdpSha1) == 0 ) {
 		$msg = "Erreur : authentification incorrecte.";
-		$code_reponse = 401;
+		$code_reponse = 200;
 	}
 	else
 	{  // récupération de la liste des utilisateurs à l'aide de la méthode getTousLesUtilisateurs de la classe DAO

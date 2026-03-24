@@ -27,7 +27,7 @@ else {
     // Les paramètres doivent être présents
     if ($pseudo == "" || $mdp == "" || $pseudoDestinataire == "" || $texteMessage == "" || $nomPrenom == "" ) {
         $message = "Erreur : données incomplètes.";
-        $code_reponse = 400;
+        $code_reponse = 200;
     }
 
     else
@@ -37,12 +37,12 @@ else {
 
         if ( $niveauConnexion == 0 )
         {  $message = "Erreur : authentification incorrecte.";
-            $code_reponse = 401;
+            $code_reponse = 200;
         }
         elseif (!($dao->existePseudoUtilisateur($pseudoDestinataire)))
         {
             $message = "Erreur : pseudo utilisateur inexistant.";
-            $code_reponse = 401;
+            $code_reponse = 200;
         }
         else
         {	$utilisateurDemandeur = $dao->getUnUtilisateur($pseudo);
