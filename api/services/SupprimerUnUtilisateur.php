@@ -105,10 +105,12 @@ else {
 }
 
 // envoi de la réponse HTTP
+$this->envoyerReponse($code_reponse, $content_type, $donnees);
+
+// envoi de la réponse HTTP
 http_response_code($code_reponse);
 header("Content-Type: " . $content_type);
 echo $donnees;
-
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
 

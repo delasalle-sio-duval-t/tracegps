@@ -14,23 +14,22 @@
 // Les paramètres doivent être passés par la méthode GET :
 //     http://<hébergeur>/tracegps/api/CreerUnUtilisateur?pseudo=turlututu&adrMail=delasalle.sio.eleves@gmail.com&numTel=1122334455&lang=xml
 
-include_once('C:\wamp64\www\ws-php-lb\TraceGPS\modele\DAO.php');
-
 // connexion du serveur web à la base MySQL
+include_once('../modele/DAO.php');
 $dao = new DAO();
 
 // Récupération des données transmises
-$pseudo = ( empty($_GET['pseudo'])) ? "" : $_GET['pseudo'];
-$adrMail = ( empty($_GET['adrMail'])) ? "" : $_GET['adrMail'];
-$numTel = ( empty($_GET['numTel'])) ? "" : $_GET['numTel'];
-$lang = ( empty($_GET['lang'])) ? "" : $_GET['lang'];
+$pseudo = ( empty($this->request['pseudo'])) ? "" : $this->request['pseudo'];
+$adrMail = ( empty($this->request['adrMail'])) ? "" : $this->request['adrMail'];
+$numTel = ( empty($this->request['numTel'])) ? "" : $this->request['numTel'];
+$lang = ( empty($this->request['lang'])) ? "" : $this->request['lang'];
 
 // "xml" par défaut si le paramètre lang est absent ou incorrect
 if ($lang != "json") $lang = "xml";
 
 // La méthode HTTP utilisée doit être GET
-if ($_SERVER['REQUEST_METHOD'] != "GET")
-{   $msg = "Erreur : méthode HTTP incorrecte.";
+if ($this->getMethodeRequete() != "GET")
+{	$msg = "Erreur : méthode HTTP incorrecte.";
     $code_reponse = 406;
 }
 else {
@@ -105,9 +104,7 @@ else {
 }
 
 // envoi de la réponse HTTP
-http_response_code($code_reponse);
-header("Content-Type: " . $content_type);
-echo $donnees;
+$this->envoyerReponse($code_reponse, $content_type, $donnees);
 
 // fin du programme (pour ne pas enchainer sur les 2 fonctions qui suivent)
 exit;
